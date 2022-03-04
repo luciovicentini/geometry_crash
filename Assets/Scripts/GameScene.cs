@@ -11,6 +11,7 @@ public class GameScene : MonoBehaviour
     [SerializeField] float chipMargin = 10f;
 
     [SerializeField] GameObject chip;
+    [SerializeField] GameObject insideChip;
 
     Camera cam;
 
@@ -90,7 +91,8 @@ public class GameScene : MonoBehaviour
 
     public void InstantiateChip(Vector3 position)
     {
-        GameObject newChip = Instantiate(chip, position, Quaternion.identity, gameObject.transform);
-        newChip.transform.localScale = new Vector3(GetChipXSize(), GetChipYSize(), 1f);
+        GameObject newChip = Instantiate(insideChip, position, Quaternion.identity, gameObject.transform);
+        // newChip.transform.localScale = new Vector3(GetChipXSize(), GetChipYSize(), 1f);
+        // Instantiate(insideChip, newChip.transform.position, Quaternion.identity, newChip.transform);
     }
 }

@@ -325,6 +325,7 @@ MonoBehaviour:
   columnsAmount: 10
   chipMargin: 10
   chip: {fileID: 6110749990763345529, guid: 137a73b54354a49c3948b8adb02afb90, type: 3}
+  insideChip: {fileID: 2662928245216355485, guid: 0e507c1e735514fe1811d646c2bd9c1c, type: 3}
 --- !u!4 &565116261
 Transform:
   m_ObjectHideFlags: 0
