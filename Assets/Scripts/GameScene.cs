@@ -1,17 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameScene : MonoBehaviour
 {
-    [SerializeField] GameObject chipContainer;
-    [SerializeField] int rowsAmount = 20;
-    [SerializeField] int columnsAmount = 10;
+    [SerializeField] GameObject boardBackground;
+    [SerializeField] float boardMargin = 1f;
+    [SerializeField] int chipPerSizeAmount = 10;
 
-    [SerializeField] float chipMargin = 10f;
+    [SerializeField][Range(0f, 1f)] float holderPaddingScale = 0.9f;
 
-    [SerializeField] GameObject chip;
-    [SerializeField] GameObject insideChip;
+    [SerializeField] GameObject holderChipPrefab;
+    [SerializeField] List<GameObject> chipPrefabs;
 
     Camera cam;
 
@@ -19,71 +20,80 @@ public class GameScene : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
-        GetChipContainerSize();
+
+        SetBoardSize();
+        DrawStartingBoard();
     }
 
+    void SetBoardSize()
+    {
+        float smallerScreenSideSize = IsWidthSmallerScreenSize() ? GetWidthScreenSize() : GetHeightScreenSize();
+        Debug.Log(smallerScreenSideSize);
+        float boardSize = GetBoardSize(smallerScreenSideSize);
+        Debug.Log("board size = " + boardSize);
+        boardBackground.transform.localScale = new Vector2(boardSize, boardSize);
+        boardBackground.transform.position = new Vector2(0, 0);
+    }
+
+    private float GetHolderSize()
+    {
+        return GetBoardSizeFloat() / chipPerSizeAmount;
+    }
+
+    private float GetBoardSizeFloat()
+    {
+        return boardBackground.transform.localScale.x;
+    }
 
     void Update()
     {
 
     }
 
-    private SpriteRenderer GetSpriteRenderer()
+    private float GetBoardSize(float smallerScreenSideSize)
     {
-        if (chipContainer == null) return null;
-        SpriteRenderer spriteRenderer = chipContainer.GetComponent<SpriteRenderer>();
-
-        if (spriteRenderer == null) return null;
-        return spriteRenderer;
+        return smallerScreenSideSize - (boardMargin * 2);
     }
 
-    private float GetChipXSize()
+    private Vector2 GetScreenSizeVector()
     {
-        SpriteRenderer spriteRenderer = GetSpriteRenderer();
-        Vector3 scale = spriteRenderer.transform.localScale;
-        return scale.x / columnsAmount;
+        Vector2 topRightCorner = new Vector2(1, 1);
+        Vector2 edgeVector = cam.ViewportToWorldPoint(topRightCorner);
+        return edgeVector;
     }
 
-    private float GetChipYSize()
+    private Vector2 GetBoardBottomLeftPosition()
     {
-        SpriteRenderer spriteRenderer = GetSpriteRenderer();
-        Vector3 scale = spriteRenderer.transform.localScale;
-        return scale.y / columnsAmount;
+        return new Vector2(boardBackground.transform.localScale.x / 2 * -1, boardBackground.transform.localScale.y / 2 * -1);
     }
 
-    private void GetChipContainerSize()
+    bool IsWidthSmallerScreenSize()
     {
+        return GetWidthScreenSize() < GetHeightScreenSize();
+    }
 
+    float GetWidthScreenSize()
+    {
+        return GetScreenSizeVector().x * 2;
+    }
 
-        /*Debug.Log("Min = " + min);
-        Debug.Log("Max = " + max);
+    float GetHeightScreenSize()
+    {
+        return GetScreenSizeVector().y * 2;
+    }
 
-        Vector3 minScreenPoint = cam.WorldToScreenPoint(min);
-        Vector3 maxScreenPoint = cam.WorldToScreenPoint(max);
-
-        Debug.Log("minScreenPoint = " + minScreenPoint);
-        Debug.Log("maxScreenPoint = " + maxScreenPoint);
-
-        float screenWidth = maxScreenPoint.x - minScreenPoint.x; 
-        float screenHeight = maxScreenPoint.y - minScreenPoint.y;
-
-        Debug.Log("ScreenWidth = " + screenWidth);
-        Debug.Log("ScreenHeight = " + screenHeight);
-        
-        InstantiateChip(min);
-        InstantiateChip(max); */
-        SpriteRenderer spriteRenderer = GetSpriteRenderer();
-
-        Vector3 startingPoint = spriteRenderer.bounds.min;
-
-        float offsetX = GetChipXSize();
-        float offsetY = GetChipYSize();
-
-        for (int i = 0; i < rowsAmount; i++)
+    void DrawStartingBoard()
+    {
+        Vector2 startingPoint = GetBoardBottomLeftPosition();
+        float holderSize = GetHolderSize();
+        Debug.Log("holder size = " + holderSize);
+        for (int i = 0; i < chipPerSizeAmount; i++)
         {
-            for (int j = 0; j < columnsAmount; j++)
+            for (int j = 0; j < chipPerSizeAmount; j++)
             {
-                Vector3 position = new Vector3(startingPoint.x + (offsetX * j), startingPoint.y + (offsetY * i), startingPoint.z);
+                float xPosition = startingPoint.x + (holderSize * j) + holderSize / 2;
+                float yPosition = startingPoint.y + (holderSize * i) + holderSize / 2;
+                Vector3 position = new Vector3(xPosition, yPosition, 0);
                 InstantiateChip(position);
             }
         }
@@ -91,8 +101,14 @@ public class GameScene : MonoBehaviour
 
     public void InstantiateChip(Vector3 position)
     {
-        GameObject newChip = Instantiate(insideChip, position, Quaternion.identity, gameObject.transform);
-        // newChip.transform.localScale = new Vector3(GetChipXSize(), GetChipYSize(), 1f);
-        // Instantiate(insideChip, newChip.transform.position, Quaternion.identity, newChip.transform);
+        GameObject holderChip = Instantiate(holderChipPrefab, position, Quaternion.identity, gameObject.transform);
+        holderChip.transform.localScale = new Vector2(GetHolderSize(), GetHolderSize());
+        
+        int randomChipIndex = UnityEngine.Random.Range(0, chipPrefabs.Count); 
+        GameObject insideChip = Instantiate(chipPrefabs[randomChipIndex], holderChip.transform.position, Quaternion.identity, holderChip.transform);
+        insideChip.transform.localScale = new Vector2(
+            insideChip.transform.localScale.x * holderPaddingScale,
+            insideChip.transform.localScale.y * holderPaddingScale);
     }
+
 }
