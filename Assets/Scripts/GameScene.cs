@@ -16,11 +16,9 @@ public class GameScene : MonoBehaviour
 
     Camera cam;
 
-
-    void Start()
+    void Awake()
     {
         cam = Camera.main;
-
         SetBoardSize();
         DrawStartingBoard();
     }
@@ -28,9 +26,7 @@ public class GameScene : MonoBehaviour
     void SetBoardSize()
     {
         float smallerScreenSideSize = IsWidthSmallerScreenSize() ? GetWidthScreenSize() : GetHeightScreenSize();
-        Debug.Log(smallerScreenSideSize);
         float boardSize = GetBoardSize(smallerScreenSideSize);
-        Debug.Log("board size = " + boardSize);
         boardBackground.transform.localScale = new Vector2(boardSize, boardSize);
         boardBackground.transform.position = new Vector2(0, 0);
     }
@@ -43,11 +39,6 @@ public class GameScene : MonoBehaviour
     private float GetBoardSizeFloat()
     {
         return boardBackground.transform.localScale.x;
-    }
-
-    void Update()
-    {
-
     }
 
     private float GetBoardSize(float smallerScreenSideSize)
@@ -86,29 +77,39 @@ public class GameScene : MonoBehaviour
     {
         Vector2 startingPoint = GetBoardBottomLeftPosition();
         float holderSize = GetHolderSize();
-        Debug.Log("holder size = " + holderSize);
         for (int i = 0; i < chipPerSizeAmount; i++)
         {
             for (int j = 0; j < chipPerSizeAmount; j++)
             {
-                float xPosition = startingPoint.x + (holderSize * j) + holderSize / 2;
-                float yPosition = startingPoint.y + (holderSize * i) + holderSize / 2;
-                Vector3 position = new Vector3(xPosition, yPosition, 0);
-                InstantiateChip(position);
+                Vector3 position = CalculateChipPosition(startingPoint, holderSize, i, j);
+                GameObject holderChip = InstantiateChipHolder(position);
+                InstantiateInsideChip(holderChip);
+                holderChip.name = $"{i} - {j}";
             }
         }
     }
 
-    public void InstantiateChip(Vector3 position)
+    private static Vector3 CalculateChipPosition(Vector2 startingPoint, float holderSize, int i, int j)
+    {
+        float xPosition = startingPoint.x + (holderSize * j) + holderSize / 2;
+        float yPosition = startingPoint.y + (holderSize * i) + holderSize / 2;
+        Vector3 position = new Vector3(xPosition, yPosition, 0);
+        return position;
+    }
+
+    private GameObject InstantiateChipHolder(Vector3 position)
     {
         GameObject holderChip = Instantiate(holderChipPrefab, position, Quaternion.identity, gameObject.transform);
         holderChip.transform.localScale = new Vector2(GetHolderSize(), GetHolderSize());
-        
-        int randomChipIndex = UnityEngine.Random.Range(0, chipPrefabs.Count); 
+        return holderChip;
+    }
+
+    private void InstantiateInsideChip(GameObject holderChip)
+    {
+        int randomChipIndex = UnityEngine.Random.Range(0, chipPrefabs.Count);
         GameObject insideChip = Instantiate(chipPrefabs[randomChipIndex], holderChip.transform.position, Quaternion.identity, holderChip.transform);
         insideChip.transform.localScale = new Vector2(
             insideChip.transform.localScale.x * holderPaddingScale,
             insideChip.transform.localScale.y * holderPaddingScale);
     }
-
 }
