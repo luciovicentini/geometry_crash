@@ -1,12 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using CustomUtil;
 using UnityEngine;
 
 public class ChipSwitcher : MonoBehaviour
 {
     ChipManager chip1;
 
-    ChipManager chip2;   
+    ChipManager chip2;
+
+    BoardManager boardManager;
+
+    private void Awake()
+    {
+        boardManager = FindObjectOfType<BoardManager>();
+    }
+
+
     public void SetChipClicked(ChipManager selectedChip)
     {
         if (chip1 == null)
@@ -29,6 +39,7 @@ public class ChipSwitcher : MonoBehaviour
         {
             if (AreContinuous(chip1, chip2))
             {
+                boardManager.SwitchChips(GetCoordFromChip(chip1), GetCoordFromChip(chip2));
                 SwitchChips(chip1, chip2);
                 ForgetSelectedChips();
             }
@@ -43,35 +54,31 @@ public class ChipSwitcher : MonoBehaviour
 
     private bool AreContinuous(ChipManager chip1, ChipManager chip2)
     {
-        string chipHolder1Name = chip1.transform.parent.gameObject.name;
-        string chipHolder2Name = chip2.transform.parent.gameObject.name;
-        int chipHolder1XCoord = GetXCoordFromName(chipHolder1Name);
-        int chipHolder1YCoord = GetYCoordFromName(chipHolder1Name);
-        int chipHolder2XCoord = GetXCoordFromName(chipHolder2Name);
-        int chipHolder2YCoord = GetYCoordFromName(chipHolder2Name);
-        
-        if ((chipHolder1XCoord + 1 == chipHolder2XCoord
-            || chipHolder1XCoord - 1 == chipHolder2XCoord) 
-            && chipHolder1YCoord == chipHolder2YCoord)
+        Coord chip1Coords = GetCoordFromChip(chip1);
+        Coord chip2Coords = GetCoordFromChip(chip2);
+
+        if ((chip1Coords.GetX() + 1 == chip2Coords.GetX()
+            || chip1Coords.GetX() - 1 == chip2Coords.GetX())
+            && chip1Coords.GetY() == chip2Coords.GetY())
         {
             return true;
         }
-        if ((chipHolder1YCoord + 1 == chipHolder2YCoord
-            || chipHolder1YCoord - 1 == chipHolder2YCoord) 
-            && chipHolder1XCoord == chipHolder2XCoord)
+        if ((chip1Coords.GetY() + 1 == chip2Coords.GetY()
+            || chip1Coords.GetY() - 1 == chip2Coords.GetY())
+            && chip1Coords.GetX() == chip2Coords.GetX())
         {
             return true;
         }
         return false;
     }
 
-    private int GetXCoordFromName(string name)
+    private int GetYCoordFromName(string name)
     {
         int dividerIndex = GetDividerIndex(name);
         return int.Parse(name.Substring(0, dividerIndex).Trim());
     }
 
-    private int GetYCoordFromName(string name)
+    private int GetXCoordFromName(string name)
     {
         int dividerIndex = GetDividerIndex(name);
         string s = name.Substring(dividerIndex + 1, name.Length - dividerIndex - 1).Trim();
@@ -90,7 +97,7 @@ public class ChipSwitcher : MonoBehaviour
     }
 
     private void SwitchChips(ChipManager chip1, ChipManager chip2)
-    {
+    {        
         GameObject parent1 = chip1.gameObject.transform.parent.gameObject;
         GameObject parent2 = chip2.gameObject.transform.parent.gameObject;
         chip1.transform.SetParent(parent2.transform);
@@ -99,5 +106,16 @@ public class ChipSwitcher : MonoBehaviour
         chip2.transform.localPosition = Vector2.zero;
         chip1.ResetSelection();
         chip2.ResetSelection();
+    }
+
+
+    private Coord GetCoordFromChip(ChipManager chip)
+    {
+        string name = chip.transform.parent.gameObject.name;
+        
+        int xCoord = GetXCoordFromName(name);
+        int yCoord = GetYCoordFromName(name);
+        
+        return new Coord(yCoord, xCoord);
     }
 }

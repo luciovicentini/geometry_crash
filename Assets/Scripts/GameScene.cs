@@ -14,11 +14,18 @@ public class GameScene : MonoBehaviour
     [SerializeField] GameObject holderChipPrefab;
     [SerializeField] List<GameObject> chipPrefabs;
 
+    BoardManager boardManager;
     Camera cam;
 
     void Awake()
     {
+        boardManager = FindObjectOfType<BoardManager>();
+        boardManager.SetUpBoard(chipPerSizeAmount, chipPerSizeAmount);
         cam = Camera.main;
+    }
+
+    void Start()
+    {
         SetBoardSize();
         DrawStartingBoard();
     }
@@ -83,8 +90,11 @@ public class GameScene : MonoBehaviour
             {
                 Vector3 position = CalculateChipPosition(startingPoint, holderSize, i, j);
                 GameObject holderChip = InstantiateChipHolder(position);
-                InstantiateInsideChip(holderChip);
                 holderChip.name = $"{i} - {j}";
+
+                int randomChipIndex = UnityEngine.Random.Range(0, chipPrefabs.Count);
+                InstantiateInsideChip(holderChip, randomChipIndex);
+                boardManager.SetElementOnPosition(randomChipIndex, new CustomUtil.Coord(i, j));
             }
         }
     }
@@ -104,12 +114,16 @@ public class GameScene : MonoBehaviour
         return holderChip;
     }
 
-    private void InstantiateInsideChip(GameObject holderChip)
+    private void InstantiateInsideChip(GameObject holderChip, int chipIndex)
     {
-        int randomChipIndex = UnityEngine.Random.Range(0, chipPrefabs.Count);
-        GameObject insideChip = Instantiate(chipPrefabs[randomChipIndex], holderChip.transform.position, Quaternion.identity, holderChip.transform);
+        GameObject insideChip = Instantiate(chipPrefabs[chipIndex], holderChip.transform.position, Quaternion.identity, holderChip.transform);
         insideChip.transform.localScale = new Vector2(
             insideChip.transform.localScale.x * holderPaddingScale,
             insideChip.transform.localScale.y * holderPaddingScale);
+    }
+
+    public string ChipValueToString(int value)
+    {
+        return chipPrefabs[value].name;
     }
 }
