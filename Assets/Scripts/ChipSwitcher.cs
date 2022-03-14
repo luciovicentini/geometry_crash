@@ -57,15 +57,15 @@ public class ChipSwitcher : MonoBehaviour
         Coord chip1Coords = GetCoordFromChip(chip1);
         Coord chip2Coords = GetCoordFromChip(chip2);
 
-        if ((chip1Coords.GetX() + 1 == chip2Coords.GetX()
-            || chip1Coords.GetX() - 1 == chip2Coords.GetX())
-            && chip1Coords.GetY() == chip2Coords.GetY())
+        if ((chip1Coords.x + 1 == chip2Coords.x
+            || chip1Coords.x - 1 == chip2Coords.x)
+            && chip1Coords.y == chip2Coords.y)
         {
             return true;
         }
-        if ((chip1Coords.GetY() + 1 == chip2Coords.GetY()
-            || chip1Coords.GetY() - 1 == chip2Coords.GetY())
-            && chip1Coords.GetX() == chip2Coords.GetX())
+        if ((chip1Coords.y + 1 == chip2Coords.y
+            || chip1Coords.y - 1 == chip2Coords.y)
+            && chip1Coords.x == chip2Coords.x)
         {
             return true;
         }

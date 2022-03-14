@@ -7,7 +7,8 @@ public class BoardManager : MonoBehaviour
 {
     int[,] board;
     [SerializeField] bool logBoard;
-    [SerializeField] bool shouldCheckMatches;
+    [SerializeField] bool shouldCheckMatches = false;
+    [SerializeField] bool shouldDestroyMatches = false;
 
     GameScene gameScene;
 
@@ -18,9 +19,7 @@ public class BoardManager : MonoBehaviour
 
     public void SetUpBoard(int rows, int columns)
     {
-        // Debug.Log($"Setting up an array[{rows}, {columns}]");
         board = new int[rows, columns];
-
     }
 
     void Update()
@@ -38,13 +37,13 @@ public class BoardManager : MonoBehaviour
 
     public void SetElementOnPosition(int element, Coord coord)
     {
-        board[coord.GetY(), coord.GetX()] = element;
-        Debug.Log($"Setting chip in {coord.ToString()} = {gameScene.ChipValueToString(element)}");
+        board[coord.y, coord.x] = element;
+        // Debug.Log($"Setting chip in {coord.ToString()} = {gameScene.ChipValueToString(element)}");
     }
 
     public int GetElementOnPosition(Coord coord)
     {
-        return board[coord.GetY(), coord.GetX()];
+        return board[coord.y, coord.x];
     }
 
     private void CheckMatchesAllBoard()
@@ -54,52 +53,76 @@ public class BoardManager : MonoBehaviour
         {
             for (int checkingPositionX = 0; checkingPositionX < board.GetLength(1); checkingPositionX++)
             {
-                CheckingPosition(new Coord(checkingPositionY, checkingPositionX));
+                Checking3Match(new Coord(checkingPositionY, checkingPositionX));
             }
         }
         shouldCheckMatches = false;
     }
 
-    private void CheckingPosition(Coord coord)
+    private void Checking3Match(Coord coord)
     {
-        if (IsHorizontallyInsideBoard(coord.GetX(), 3))
+        CheckingHorizontal3Match(coord);
+        CheckingVertical3Match(coord);
+    }
+
+    private void CheckingHorizontal3Match(Coord coord)
+    {
+        List<Coord> line = coord.CreateLine(3, LineType.Horizontal);
+
+        if (IsLineInsideBoard(line) && IsA3Match(line))
         {
-            if (AreNextHorThreeTheSameChip(coord))
+            if (shouldDestroyMatches)
             {
-                LogNextThreeHorPositions(coord);
+                LogListCoords(line);
+                ProcessHorLine(line);
+                RefillHor(line);
             }
         }
+    }
 
-        if (IsVertInsideBoard(coord.GetY(), 3))
+    private void CheckingVertical3Match(Coord coord)
+    {
+        List<Coord> line = coord.CreateLine(3, LineType.Vertical);
+
+        if (IsLineInsideBoard(line) && IsA3Match(line))
         {
-            if (AreNextVertThreeTheSameChip(coord))
+            if (shouldDestroyMatches)
             {
-                LogNextThreeVertPositions(coord);
+                LogListCoords(line);
+                ProcessVertLine(line);
+                RefillVert(line);
             }
         }
     }
 
-    private bool AreNextHorThreeTheSameChip(Coord coord)
+    private bool IsA3Match(List<Coord> line)
     {
-        return (GetElementOnPosition(coord) == GetElementOnPosition(coord.AddX(1)))
-            && (GetElementOnPosition(coord.AddX(1)) == GetElementOnPosition(coord.AddX(2)));
+        for (int i = 0; i < line.Count - 1; i++)
+        {
+            int elem1 = GetElementOnPosition(line[i]);
+            int elem2 = GetElementOnPosition(line[i + 1]);
+            if (elem1 != elem2) return false;
+        }
+        return true;
     }
 
-
-    private bool AreNextVertThreeTheSameChip(Coord coord)
+    private bool IsLineInsideBoard(List<Coord> line)
     {
-        return (GetElementOnPosition(coord) == GetElementOnPosition(coord.AddY(1)))
-            && (GetElementOnPosition(coord.AddY(1)) == GetElementOnPosition(coord.AddY(2)));
+        bool isLineInside = true;
+        foreach (Coord coord in line)
+        {
+            if (!IsCoordInsideBoard(coord))
+            {
+                isLineInside = false;
+                break;
+            }
+        }
+        return isLineInside;
     }
 
-    private bool IsHorizontallyInsideBoard(int posX, int length)
+    private bool IsCoordInsideBoard(Coord coord)
     {
-        return GetBoardXLength() - 1 > posX + length - 1;
-    }
-
-    private bool IsVertInsideBoard(int posY, int length)
-    {
-        return GetBoardYLength() - 1 > posY + length - 1;
+        return GetBoardYLength() > coord.y && GetBoardXLength() > coord.x;
     }
 
     private int GetBoardYLength()
@@ -114,7 +137,7 @@ public class BoardManager : MonoBehaviour
 
     private void LogBoard()
     {
-
+        string board = "";
         for (int i = 0; i < GetBoardYLength(); i++)
         {
             string line = $"Row({i}) [";
@@ -127,27 +150,102 @@ public class BoardManager : MonoBehaviour
                 }
             }
             line += "]";
-            Debug.Log(line);
+            board += $"{line}\n";
         }
+        Debug.Log(board);
         logBoard = false;
     }
 
-    private void LogNextThreeHorPositions(Coord coord)
+    private void ProcessHorLine(List<Coord> line)
     {
-        Debug.Log($"Chips [{coord.ToString()}],[{coord.AddX(1).ToString()}],[{coord.AddX(2).ToString()}] are equals");
+        RemoveChips(line);
+        SwitchHorLineChips(line);
     }
 
-    private void LogNextThreeVertPositions(Coord coord)
+    private void SwitchHorLineChips(List<Coord> line)
     {
-        Debug.Log($"Chips [{coord.ToString()}],[{coord.AddY(1).ToString()}],[{coord.AddY(2).ToString()}] are equals");
+        foreach (Coord coord in line)
+        {
+            TakeDownColumnByOne(coord);
+        }
+    }
+
+    private void ProcessVertLine(List<Coord> line)
+    {
+        RemoveChips(line);
+        VertLineSwitchChips(line);
+    }
+
+    private void VertLineSwitchChips(List<Coord> line)
+    {
+        Coord originalCoord = line[0];
+        for (int i = 0; i < line.Count; i++)
+        {
+            TakeDownColumnByOne(originalCoord);
+        }
+    }
+
+    private void TakeDownColumnByOne(Coord coord)
+    {
+        int amount = GetAmountOfRowToTop(coord);
+        for (int i = 0; i < amount; i++)
+        {
+            Coord coord1 = coord.AddY(i);
+            Coord coord2 = coord1.AddY(1);
+            SwitchChips(coord1, coord2);
+        }
+    }
+
+    private void RefillHor(List<Coord> line)
+    {
+        foreach (Coord coord in line)
+        {
+            RefillOnTop(coord);
+        }
+    }
+
+    private void RefillOnTop(Coord coord)
+    {
+        int delta = GetAmountOfRowToTop(coord);
+        SetElementOnPosition(gameScene.GetRandomChipIndex(), coord.AddY(delta));
+    }
+
+    private void RefillVert(List<Coord> line)
+    {
+        int lastRow = GetBoardYLength() - 1;
+
+        for (int i = 0; i < line.Count; i++)
+        {
+            Coord coord = new Coord(lastRow - i, line[0].x);
+            SetElementOnPosition(gameScene.GetRandomChipIndex(), coord);
+        }
+    }
+
+    private int GetAmountOfRowToTop(Coord coord) => GetBoardYLength() - 1 - coord.y;
+
+    private void LogListCoords(List<Coord> coords)
+    {
+        Debug.Log($"Chips [{Coord.ListDebugging(coords)}] are equals");
+    }
+
+    private void RemoveChips(List<Coord> coords)
+    {
+        foreach (Coord coord in coords)
+        {
+            RemoveChip(coord);
+        }
+        shouldDestroyMatches = false;
+    }
+
+    private void RemoveChip(Coord coord)
+    {
+        SetElementOnPosition(-1, coord);
     }
 
     public void SwitchChips(Coord coordChip1, Coord coordChip2)
     {
         int chip1Element = GetElementOnPosition(coordChip1);
         int chip2Element = GetElementOnPosition(coordChip2);
-        Debug.Log($"SwitchChips ({chip1Element}) {gameScene.ChipValueToString(chip1Element)} - {coordChip1}");
-        Debug.Log($"SwitchChips ({chip2Element}) {gameScene.ChipValueToString(chip2Element)} - {coordChip2}");
 
         SetElementOnPosition(chip1Element, coordChip2);
         SetElementOnPosition(chip2Element, coordChip1);

@@ -92,11 +92,16 @@ public class GameScene : MonoBehaviour
                 GameObject holderChip = InstantiateChipHolder(position);
                 holderChip.name = $"{i} - {j}";
 
-                int randomChipIndex = UnityEngine.Random.Range(0, chipPrefabs.Count);
+                int randomChipIndex = GetRandomChipIndex();
                 InstantiateInsideChip(holderChip, randomChipIndex);
                 boardManager.SetElementOnPosition(randomChipIndex, new CustomUtil.Coord(i, j));
             }
         }
+    }
+
+    public int GetRandomChipIndex()
+    {
+        return UnityEngine.Random.Range(0, chipPrefabs.Count);
     }
 
     private static Vector3 CalculateChipPosition(Vector2 startingPoint, float holderSize, int i, int j)
@@ -124,6 +129,7 @@ public class GameScene : MonoBehaviour
 
     public string ChipValueToString(int value)
     {
+        if (value == -1) return "Empty";
         return chipPrefabs[value].name;
     }
 }
