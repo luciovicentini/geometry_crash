@@ -40,7 +40,6 @@ public class ChipSwitcher : MonoBehaviour
             if (AreContinuous(chip1, chip2))
             {
                 boardManager.SwitchChips(GetCoordFromChip(chip1), GetCoordFromChip(chip2));
-                SwitchChips(chip1, chip2);
                 ForgetSelectedChips();
             }
             else
@@ -92,22 +91,12 @@ public class ChipSwitcher : MonoBehaviour
 
     private void ForgetSelectedChips()
     {
+        chip1.ResetSelection();
         chip1 = null;
+
+        chip2.ResetSelection();
         chip2 = null;
     }
-
-    private void SwitchChips(ChipManager chip1, ChipManager chip2)
-    {        
-        GameObject parent1 = chip1.gameObject.transform.parent.gameObject;
-        GameObject parent2 = chip2.gameObject.transform.parent.gameObject;
-        chip1.transform.SetParent(parent2.transform);
-        chip2.transform.SetParent(parent1.transform);
-        chip1.transform.localPosition = Vector2.zero;
-        chip2.transform.localPosition = Vector2.zero;
-        chip1.ResetSelection();
-        chip2.ResetSelection();
-    }
-
 
     private Coord GetCoordFromChip(ChipManager chip)
     {

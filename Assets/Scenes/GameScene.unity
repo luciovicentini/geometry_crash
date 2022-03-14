@@ -466,6 +466,7 @@ MonoBehaviour:
   - {fileID: 8020472249034692333, guid: b4b275289c7454ff79169abc230f52d8, type: 3}
   - {fileID: 3276059195864019161, guid: d7ba3f06e393043399faf3bac703a521, type: 3}
   - {fileID: 8020472249034692333, guid: 4470cb25739024b4ab3aafc0543acae4, type: 3}
+  - {fileID: 7601685037502133997, guid: cc9a82be502534114a45f53fb32874ba, type: 3}
 --- !u!4 &565116261
 Transform:
   m_ObjectHideFlags: 0
@@ -541,6 +542,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   logBoard: 0
   shouldCheckMatches: 0
+  shouldDestroyMatches: 0
+  shouldDrawBoard: 0
 --- !u!1 &1722403468
 GameObject:
   m_ObjectHideFlags: 0

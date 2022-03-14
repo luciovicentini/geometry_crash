@@ -10,6 +10,12 @@ public class BoardManager : MonoBehaviour
     [SerializeField] bool shouldCheckMatches = false;
     [SerializeField] bool shouldDestroyMatches = false;
 
+    [SerializeField] bool shouldDrawBoard = false;
+
+    bool boardHadAMatch = false;
+
+    int chipsQty = 0;
+
     GameScene gameScene;
 
     void Awake()
@@ -22,8 +28,37 @@ public class BoardManager : MonoBehaviour
         board = new int[rows, columns];
     }
 
+    public void SetUpChips(int chipsQty)
+    {
+        this.chipsQty = chipsQty;
+        PopulateBoard();
+    }
+
+    private void PopulateBoard()
+    {
+        for (int i = 0; i < GetBoardYLength(); i++)
+        {
+            for (int j = 0; j < GetBoardXLength(); j++)
+            {
+                int randomChipIndex = GetRandomChipIndex();
+                board[i, j] = randomChipIndex;
+            }
+        }
+        shouldDrawBoard = false;
+    }
+
+    public int GetRandomChipIndex()
+    {
+        return UnityEngine.Random.Range(0, chipsQty);
+    }
+
     void Update()
     {
+        if (shouldDrawBoard)
+        {
+            DrawBoard();
+        }
+
         if (logBoard)
         {
             LogBoard();
@@ -32,7 +67,25 @@ public class BoardManager : MonoBehaviour
         if (shouldCheckMatches)
         {
             CheckMatchesAllBoard();
+            if (!boardHadAMatch)
+            {
+                Debug.Log("This board has not more matches");
+            }
         }
+    }
+
+    private void DrawBoard()
+    {
+        for (int i = 0; i < GetBoardYLength(); i++)
+        {
+            for (int j = 0; j < GetBoardXLength(); j++)
+            {
+                Coord position = new Coord(i,j);
+                gameScene.SetUpInsideChip(GetElementOnPosition(position), position.y, position.x);
+            }
+        }
+        shouldDrawBoard = false;
+        
     }
 
     public void SetElementOnPosition(int element, Coord coord)
@@ -48,7 +101,7 @@ public class BoardManager : MonoBehaviour
 
     private void CheckMatchesAllBoard()
     {
-
+        boardHadAMatch = false;
         for (int checkingPositionY = 0; checkingPositionY < GetBoardYLength(); checkingPositionY++)
         {
             for (int checkingPositionX = 0; checkingPositionX < board.GetLength(1); checkingPositionX++)
@@ -73,6 +126,7 @@ public class BoardManager : MonoBehaviour
         {
             if (shouldDestroyMatches)
             {
+                boardHadAMatch = true;
                 LogListCoords(line);
                 ProcessHorLine(line);
                 RefillHor(line);
@@ -88,6 +142,7 @@ public class BoardManager : MonoBehaviour
         {
             if (shouldDestroyMatches)
             {
+                boardHadAMatch = true;
                 LogListCoords(line);
                 ProcessVertLine(line);
                 RefillVert(line);
@@ -207,7 +262,7 @@ public class BoardManager : MonoBehaviour
     private void RefillOnTop(Coord coord)
     {
         int delta = GetAmountOfRowToTop(coord);
-        SetElementOnPosition(gameScene.GetRandomChipIndex(), coord.AddY(delta));
+        SetElementOnPosition(GetRandomChipIndex(), coord.AddY(delta));
     }
 
     private void RefillVert(List<Coord> line)
@@ -217,7 +272,7 @@ public class BoardManager : MonoBehaviour
         for (int i = 0; i < line.Count; i++)
         {
             Coord coord = new Coord(lastRow - i, line[0].x);
-            SetElementOnPosition(gameScene.GetRandomChipIndex(), coord);
+            SetElementOnPosition(GetRandomChipIndex(), coord);
         }
     }
 
@@ -249,5 +304,6 @@ public class BoardManager : MonoBehaviour
 
         SetElementOnPosition(chip1Element, coordChip2);
         SetElementOnPosition(chip2Element, coordChip1);
+        shouldDrawBoard = true;
     }
 }
