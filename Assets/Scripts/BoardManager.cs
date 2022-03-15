@@ -12,8 +12,6 @@ public class BoardManager : MonoBehaviour
 
     int[,] board;
 
-    bool boardHadAMatch = false;
-
     int chipsQty = 0;
 
     GameScene gameScene;
@@ -54,7 +52,7 @@ public class BoardManager : MonoBehaviour
 
     internal void Check3Matches()
     {
-        
+        shouldCheckMatches = true;
     }
 
     void Update()
@@ -71,11 +69,7 @@ public class BoardManager : MonoBehaviour
 
         if (shouldCheckMatches)
         {
-            CheckMatchesAllBoard();
-            if (!boardHadAMatch)
-            {
-                Debug.Log("This board has not more matches");
-            }
+            Check3MatchesAllPositions();
         }
     }
 
@@ -103,9 +97,8 @@ public class BoardManager : MonoBehaviour
         return board[coord.y, coord.x];
     }
 
-    private void CheckMatchesAllBoard()
+    private void Check3MatchesAllPositions()
     {
-        boardHadAMatch = false;
         for (int checkingPositionY = 0; checkingPositionY < GetBoardYLength(); checkingPositionY++)
         {
             for (int checkingPositionX = 0; checkingPositionX < board.GetLength(1); checkingPositionX++)
@@ -113,7 +106,6 @@ public class BoardManager : MonoBehaviour
                 Checking3Match(new Coord(checkingPositionY, checkingPositionX));
             }
         }
-        shouldCheckMatches = false;
     }
 
     private void Checking3Match(Coord coord)
@@ -128,10 +120,10 @@ public class BoardManager : MonoBehaviour
 
         if (IsLineInsideBoard(line) && IsA3Match(line))
         {
-            boardHadAMatch = true;
             LogListCoords(line);
             ProcessHorLine(line);
             RefillHor(line);
+            shouldDrawBoard = true;
         }
     }
 
@@ -139,10 +131,13 @@ public class BoardManager : MonoBehaviour
     {
         List<Coord> line = coord.CreateLine(3, LineType.Vertical);
 
-        boardHadAMatch = true;
-        LogListCoords(line);
-        ProcessVertLine(line);
-        RefillVert(line);
+        if (IsLineInsideBoard(line) && IsA3Match(line))
+        {
+            LogListCoords(line);
+            ProcessVertLine(line);
+            RefillVert(line);
+            shouldDrawBoard = true;
+        }
     }
 
     private bool IsA3Match(List<Coord> line)
@@ -308,7 +303,10 @@ public class BoardManager : MonoBehaviour
 
         SetElementOnPosition(chip1Element, coordChip2);
         SetElementOnPosition(chip2Element, coordChip1);
-        shouldDrawBoard = true;
+        
+        /* TODO Mejorar el momento de dibujo del tablero.
+        El tablero se tendria que dibujar cuando hay un match al final del proceso no cuando hay un switch.
+        */
     }
 
     internal bool CheckCoordMade3Match(Coord coord)

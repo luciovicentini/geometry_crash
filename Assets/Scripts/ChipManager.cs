@@ -10,10 +10,13 @@ public class ChipManager : MonoBehaviour
     SpriteRenderer chipRenderer;
     Color backgroundColor;
 
+    Color originalColor;
+
     private void Awake()
     {
         backgroundColor = Color.white;
         chipRenderer = GetComponent<SpriteRenderer>();
+        SaveOriginalColor();
     }
 
     void Update()
@@ -37,8 +40,15 @@ public class ChipManager : MonoBehaviour
         }
         else
         {
-            backgroundColor = Color.white;
+            backgroundColor = originalColor;
         }
+    }
+
+    private void SaveOriginalColor()
+    {
+        if (chipRenderer == null) return;
+
+        originalColor = chipRenderer.color;
     }
 
     public void ToggleSelection()
