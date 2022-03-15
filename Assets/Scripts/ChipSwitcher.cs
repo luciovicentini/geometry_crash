@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CustomUtil;
@@ -39,7 +40,18 @@ public class ChipSwitcher : MonoBehaviour
         {
             if (AreContinuous(chip1, chip2))
             {
-                boardManager.SwitchChips(GetCoordFromChip(chip1), GetCoordFromChip(chip2));
+                Coord coordChip1 = GetCoordFromChip(chip1);
+                Coord coordChip2 = GetCoordFromChip(chip2);
+                boardManager.SwitchChips(coordChip1, coordChip2);
+
+                if (HasA3MatchFormed(coordChip1, coordChip2))
+                {
+                    boardManager.Check3Matches();
+                }
+                else
+                {
+                    boardManager.SwitchChips(coordChip2, coordChip1);
+                }
                 ForgetSelectedChips();
             }
             else
@@ -50,6 +62,10 @@ public class ChipSwitcher : MonoBehaviour
             }
         }
     }
+
+    private bool HasA3MatchFormed(Coord coordChip1, Coord coordChip2) =>
+        boardManager.CheckCoordMade3Match(coordChip1)
+        || boardManager.CheckCoordMade3Match(coordChip2);
 
     private bool AreContinuous(ChipManager chip1, ChipManager chip2)
     {
@@ -101,10 +117,10 @@ public class ChipSwitcher : MonoBehaviour
     private Coord GetCoordFromChip(ChipManager chip)
     {
         string name = chip.transform.parent.gameObject.name;
-        
+
         int xCoord = GetXCoordFromName(name);
         int yCoord = GetYCoordFromName(name);
-        
+
         return new Coord(yCoord, xCoord);
     }
 }

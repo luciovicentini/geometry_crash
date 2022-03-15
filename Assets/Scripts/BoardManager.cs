@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CustomUtil;
@@ -5,12 +6,11 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
-    int[,] board;
     [SerializeField] bool logBoard;
     [SerializeField] bool shouldCheckMatches = false;
-    [SerializeField] bool shouldDestroyMatches = false;
-
     [SerializeField] bool shouldDrawBoard = false;
+
+    int[,] board;
 
     bool boardHadAMatch = false;
 
@@ -52,6 +52,11 @@ public class BoardManager : MonoBehaviour
         return UnityEngine.Random.Range(0, chipsQty);
     }
 
+    internal void Check3Matches()
+    {
+        
+    }
+
     void Update()
     {
         if (shouldDrawBoard)
@@ -80,12 +85,11 @@ public class BoardManager : MonoBehaviour
         {
             for (int j = 0; j < GetBoardXLength(); j++)
             {
-                Coord position = new Coord(i,j);
+                Coord position = new Coord(i, j);
                 gameScene.SetUpInsideChip(GetElementOnPosition(position), position.y, position.x);
             }
         }
         shouldDrawBoard = false;
-        
     }
 
     public void SetElementOnPosition(int element, Coord coord)
@@ -124,13 +128,10 @@ public class BoardManager : MonoBehaviour
 
         if (IsLineInsideBoard(line) && IsA3Match(line))
         {
-            if (shouldDestroyMatches)
-            {
-                boardHadAMatch = true;
-                LogListCoords(line);
-                ProcessHorLine(line);
-                RefillHor(line);
-            }
+            boardHadAMatch = true;
+            LogListCoords(line);
+            ProcessHorLine(line);
+            RefillHor(line);
         }
     }
 
@@ -138,16 +139,10 @@ public class BoardManager : MonoBehaviour
     {
         List<Coord> line = coord.CreateLine(3, LineType.Vertical);
 
-        if (IsLineInsideBoard(line) && IsA3Match(line))
-        {
-            if (shouldDestroyMatches)
-            {
-                boardHadAMatch = true;
-                LogListCoords(line);
-                ProcessVertLine(line);
-                RefillVert(line);
-            }
-        }
+        boardHadAMatch = true;
+        LogListCoords(line);
+        ProcessVertLine(line);
+        RefillVert(line);
     }
 
     private bool IsA3Match(List<Coord> line)
@@ -177,7 +172,17 @@ public class BoardManager : MonoBehaviour
 
     private bool IsCoordInsideBoard(Coord coord)
     {
-        return GetBoardYLength() > coord.y && GetBoardXLength() > coord.x;
+        return IsInsideY(coord) && IsInsideX(coord);
+    }
+
+    private bool IsInsideX(Coord coord)
+    {
+        return GetBoardXLength() > coord.x && coord.x >= 0;
+    }
+
+    private bool IsInsideY(Coord coord)
+    {
+        return GetBoardYLength() > coord.y && coord.y >= 0;
     }
 
     private int GetBoardYLength()
@@ -214,40 +219,40 @@ public class BoardManager : MonoBehaviour
     private void ProcessHorLine(List<Coord> line)
     {
         RemoveChips(line);
-        SwitchHorLineChips(line);
+        BoobleUpHorizontalLine(line);
     }
 
-    private void SwitchHorLineChips(List<Coord> line)
+    private void BoobleUpHorizontalLine(List<Coord> line)
     {
         foreach (Coord coord in line)
         {
-            TakeDownColumnByOne(coord);
+            BoobleCoordUpToTop(coord);
         }
     }
 
     private void ProcessVertLine(List<Coord> line)
     {
         RemoveChips(line);
-        VertLineSwitchChips(line);
+        BoobleUpVerticalLine(line);
     }
 
-    private void VertLineSwitchChips(List<Coord> line)
+    private void BoobleUpVerticalLine(List<Coord> line)
     {
         Coord originalCoord = line[0];
         for (int i = 0; i < line.Count; i++)
         {
-            TakeDownColumnByOne(originalCoord);
+            BoobleCoordUpToTop(originalCoord);
         }
     }
 
-    private void TakeDownColumnByOne(Coord coord)
+    private void BoobleCoordUpToTop(Coord coord)
     {
-        int amount = GetAmountOfRowToTop(coord);
-        for (int i = 0; i < amount; i++)
+        int amountRows = GetAmountOfRowToTop(coord);
+        for (int i = 0; i < amountRows; i++)
         {
-            Coord coord1 = coord.AddY(i);
-            Coord coord2 = coord1.AddY(1);
-            SwitchChips(coord1, coord2);
+            Coord originCoord = coord.AddY(i);
+            Coord nextCoordUp = originCoord.AddY(1);
+            SwitchChips(originCoord, nextCoordUp);
         }
     }
 
@@ -289,7 +294,6 @@ public class BoardManager : MonoBehaviour
         {
             RemoveChip(coord);
         }
-        shouldDestroyMatches = false;
     }
 
     private void RemoveChip(Coord coord)
@@ -306,4 +310,18 @@ public class BoardManager : MonoBehaviour
         SetElementOnPosition(chip2Element, coordChip1);
         shouldDrawBoard = true;
     }
+
+    internal bool CheckCoordMade3Match(Coord coord)
+    {
+        bool is3MatchMade = false;
+        List<List<Coord>> lineList = coord.Get3MLineInAllDirecctions();
+        foreach (List<Coord> line in lineList)
+        {
+            if (!IsLineInsideBoard(line)) continue;
+            if (!IsA3Match(line)) continue;
+            is3MatchMade = true;
+        }
+        return is3MatchMade;
+    }
+
 }

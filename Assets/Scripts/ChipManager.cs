@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,4 +50,12 @@ public class ChipManager : MonoBehaviour
     {
         isSelected = false;
     }
+
+    internal void SetSelection(bool v)
+    {
+        isSelected = v;
+    }
+
+    internal bool GetSelection() => isSelected;
+   
 }

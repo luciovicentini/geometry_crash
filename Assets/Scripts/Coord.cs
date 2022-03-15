@@ -11,8 +11,8 @@ namespace CustomUtil
 
     public class Coord
     {
-        public int x {get; set;}
-        public int y {get; set;}
+        public int x { get; set; }
+        public int y { get; set; }
 
 
         public Coord()
@@ -60,6 +60,47 @@ namespace CustomUtil
             }
             result += "]";
             return result;
+        }
+
+        internal List<List<Coord>> Get3MLineInAllDirecctions()
+        {
+            List<List<Coord>> listLine = new List<List<Coord>>();
+            listLine.Add(GetLineUp());
+            listLine.Add(GetLineDown());
+            listLine.Add(GetLineLeft());
+            listLine.Add(GetLineRight());
+            listLine.Add(GetLineCenter(LineType.Horizontal));
+            listLine.Add(GetLineCenter(LineType.Vertical));
+
+            return listLine;
+        }
+
+        private List<Coord> GetLineRight() => CreateLine(3, LineType.Horizontal);
+
+        private List<Coord> GetLineLeft() => AddX(-2).CreateLine(3, LineType.Horizontal);
+
+        private List<Coord> GetLineDown() => AddY(-2).CreateLine(3, LineType.Vertical);
+
+        private List<Coord> GetLineUp() => CreateLine(3, LineType.Vertical);
+
+        private List<Coord> GetLineCenter(LineType type)
+        {
+            Coord newOrigin;
+
+            switch (type)
+            {
+                case LineType.Horizontal:
+                    newOrigin = AddX(-1);
+                    break;
+                case LineType.Vertical:
+                    newOrigin = AddY(-1);
+                    break;
+                default:
+                    newOrigin = null;
+                    break;
+            }
+
+            return newOrigin.CreateLine(3, type);
         }
     }
 }

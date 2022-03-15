@@ -116,8 +116,9 @@ public class GameScene : MonoBehaviour
     public void SetUpInsideChip(int chipIndex, int row, int column)
     {
         GameObject holderChip = GetHolderChipFromPosition(row, column);
+        bool wasChipSelected = GetSelection(holderChip);
         RemoveChildren(holderChip);
-        InstantiateInsideChip(holderChip, chipIndex);
+        InstantiateInsideChip(holderChip, chipIndex, wasChipSelected);
     }
 
     private void RemoveChildren(GameObject holderChip)
@@ -128,19 +129,28 @@ public class GameScene : MonoBehaviour
         }
     }
 
-    private GameObject GetHolderChipFromPosition(int row, int column)
+    public GameObject GetHolderChipFromPosition(int row, int column)
     {
         return GameObject.Find(GetHolderName(row, column));
     }
 
     private string GetHolderName(int row, int column) => $"{row} - {column}";
 
-    private void InstantiateInsideChip(GameObject holderChip, int chipIndex)
+    private void InstantiateInsideChip(GameObject holderChip, int chipIndex, bool isSelected)
     {
         GameObject insideChip = Instantiate(chipPrefabs[chipIndex], holderChip.transform.position, Quaternion.identity, holderChip.transform);
         insideChip.transform.localScale = new Vector2(
             insideChip.transform.localScale.x * holderPaddingScale,
             insideChip.transform.localScale.y * holderPaddingScale);
+        
+        insideChip.GetComponent<ChipManager>().SetSelection(isSelected);
+    }
+
+    private bool GetSelection(GameObject holderChip)
+    {
+        ChipManager cm = holderChip.GetComponentInChildren<ChipManager>();
+        if (cm == null) return false;
+        return cm.GetSelection();
     }
 
     public string ChipValueToString(int value)
