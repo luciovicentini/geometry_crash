@@ -10,15 +10,19 @@ public class BoardManager : MonoBehaviour
     [SerializeField] bool shouldCheckMatches = false;
     [SerializeField] bool shouldDrawBoard = false;
 
+    [SerializeField] int _3MatchScore = 1;
     int[,] board;
 
     int chipsQty = 0;
 
     GameScene gameScene;
+    ScoreKeeper scoreKeeper;
 
     void Awake()
     {
         gameScene = FindObjectOfType<GameScene>();
+        scoreKeeper = FindObjectOfType<ScoreKeeper>();
+        shouldDrawBoard = true;
     }
 
     public void SetUpBoard(int rows, int columns)
@@ -42,7 +46,6 @@ public class BoardManager : MonoBehaviour
                 board[i, j] = randomChipIndex;
             }
         }
-        shouldDrawBoard = false;
     }
 
     public int GetRandomChipIndex()
@@ -89,7 +92,6 @@ public class BoardManager : MonoBehaviour
     public void SetElementOnPosition(int element, Coord coord)
     {
         board[coord.y, coord.x] = element;
-        // Debug.Log($"Setting chip in {coord.ToString()} = {gameScene.ChipValueToString(element)}");
     }
 
     public int GetElementOnPosition(Coord coord)
@@ -120,6 +122,7 @@ public class BoardManager : MonoBehaviour
 
         if (IsLineInsideBoard(line) && IsA3Match(line))
         {
+            scoreKeeper.AddToCurrentScore(_3MatchScore);
             LogListCoords(line);
             ProcessHorLine(line);
             RefillHor(line);
@@ -133,6 +136,7 @@ public class BoardManager : MonoBehaviour
 
         if (IsLineInsideBoard(line) && IsA3Match(line))
         {
+            scoreKeeper.AddToCurrentScore(_3MatchScore);
             LogListCoords(line);
             ProcessVertLine(line);
             RefillVert(line);
@@ -303,10 +307,6 @@ public class BoardManager : MonoBehaviour
 
         SetElementOnPosition(chip1Element, coordChip2);
         SetElementOnPosition(chip2Element, coordChip1);
-        
-        /* TODO Mejorar el momento de dibujo del tablero.
-        El tablero se tendria que dibujar cuando hay un match al final del proceso no cuando hay un switch.
-        */
     }
 
     internal bool CheckCoordMade3Match(Coord coord)
