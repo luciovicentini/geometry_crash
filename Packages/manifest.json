@@ -1,6 +1,12 @@
 {
   "dependencies": {
+<<<<<<< HEAD
     "com.unity.collab-proxy": "1.15.13",
+=======
+    "com.unity.adaptiveperformance": "3.0.2",
+    "com.unity.adaptiveperformance.samsung.android": "4.0.0",
+    "com.unity.collab-proxy": "1.15.12",
+>>>>>>> b3c08eeea811f43214bae20961509e0b181b4bdb
     "com.unity.feature.2d": "1.0.0",
     "com.unity.feature.mobile": "1.0.0",
     "com.unity.ide.rider": "3.0.12",

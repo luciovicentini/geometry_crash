@@ -16,18 +16,23 @@ public class GameScene : MonoBehaviour
 
     BoardManager boardManager;
     Camera cam;
+    Vector2 startingPoint;
+    float holderSize;
 
     void Awake()
     {
         boardManager = FindObjectOfType<BoardManager>();
-        boardManager.SetUpBoard(chipPerSizeAmount, chipPerSizeAmount);
         cam = Camera.main;
     }
 
     void Start()
     {
         SetBoardSize();
-        DrawStartingBoard();
+        startingPoint = GetBoardBottomLeftPosition();
+        holderSize = GetHolderSize();
+        SetUpHolderChips();
+        boardManager.SetUpBoard(chipPerSizeAmount, chipPerSizeAmount);
+        boardManager.SetUpChips(chipPrefabs.Count);
     }
 
     void SetBoardSize()
@@ -80,21 +85,15 @@ public class GameScene : MonoBehaviour
         return GetScreenSizeVector().y * 2;
     }
 
-    void DrawStartingBoard()
+    private void SetUpHolderChips()
     {
-        Vector2 startingPoint = GetBoardBottomLeftPosition();
-        float holderSize = GetHolderSize();
-        for (int i = 0; i < chipPerSizeAmount; i++)
+        for (int row = 0; row < chipPerSizeAmount; row++)
         {
-            for (int j = 0; j < chipPerSizeAmount; j++)
+            for (int column = 0; column < chipPerSizeAmount; column++)
             {
-                Vector3 position = CalculateChipPosition(startingPoint, holderSize, i, j);
+                Vector3 position = CalculateChipPosition(startingPoint, holderSize, row, column);
                 GameObject holderChip = InstantiateChipHolder(position);
-                holderChip.name = $"{i} - {j}";
-
-                int randomChipIndex = UnityEngine.Random.Range(0, chipPrefabs.Count);
-                InstantiateInsideChip(holderChip, randomChipIndex);
-                boardManager.SetElementOnPosition(randomChipIndex, new CustomUtil.Coord(i, j));
+                holderChip.name = GetHolderName(row, column);
             }
         }
     }
@@ -113,17 +112,50 @@ public class GameScene : MonoBehaviour
         holderChip.transform.localScale = new Vector2(GetHolderSize(), GetHolderSize());
         return holderChip;
     }
+    
+    public void SetUpInsideChip(int chipIndex, int row, int column)
+    {
+        GameObject holderChip = GetHolderChipFromPosition(row, column);
+        bool wasChipSelected = GetSelection(holderChip);
+        RemoveChildren(holderChip);
+        InstantiateInsideChip(holderChip, chipIndex, wasChipSelected);
+    }
 
-    private void InstantiateInsideChip(GameObject holderChip, int chipIndex)
+    private void RemoveChildren(GameObject holderChip)
+    {
+        for (int i = 0; i < holderChip.transform.childCount; i++)
+        {
+            Destroy(holderChip.transform.GetChild(i).gameObject);
+        }
+    }
+
+    public GameObject GetHolderChipFromPosition(int row, int column)
+    {
+        return GameObject.Find(GetHolderName(row, column));
+    }
+
+    private string GetHolderName(int row, int column) => $"{row} - {column}";
+
+    private void InstantiateInsideChip(GameObject holderChip, int chipIndex, bool isSelected)
     {
         GameObject insideChip = Instantiate(chipPrefabs[chipIndex], holderChip.transform.position, Quaternion.identity, holderChip.transform);
         insideChip.transform.localScale = new Vector2(
             insideChip.transform.localScale.x * holderPaddingScale,
             insideChip.transform.localScale.y * holderPaddingScale);
+        
+        insideChip.GetComponent<ChipManager>().SetSelection(isSelected);
+    }
+
+    private bool GetSelection(GameObject holderChip)
+    {
+        ChipManager cm = holderChip.GetComponentInChildren<ChipManager>();
+        if (cm == null) return false;
+        return cm.GetSelection();
     }
 
     public string ChipValueToString(int value)
     {
+        if (value == -1) return "Empty";
         return chipPrefabs[value].name;
     }
 }

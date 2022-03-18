@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CustomUtil;
@@ -5,26 +6,65 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
-    int[,] board;
     [SerializeField] bool logBoard;
-    [SerializeField] bool shouldCheckMatches;
+    [SerializeField] bool shouldCheckMatches = false;
+    [SerializeField] bool shouldDrawBoard = false;
+
+    [SerializeField] int _3MatchScore = 1;
+    int[,] board;
+
+    int chipsQty = 0;
 
     GameScene gameScene;
+    ScoreKeeper scoreKeeper;
 
     void Awake()
     {
         gameScene = FindObjectOfType<GameScene>();
+        scoreKeeper = FindObjectOfType<ScoreKeeper>();
+        shouldDrawBoard = true;
     }
 
     public void SetUpBoard(int rows, int columns)
     {
-        // Debug.Log($"Setting up an array[{rows}, {columns}]");
         board = new int[rows, columns];
+    }
 
+    public void SetUpChips(int chipsQty)
+    {
+        this.chipsQty = chipsQty;
+        PopulateBoard();
+    }
+
+    private void PopulateBoard()
+    {
+        for (int i = 0; i < GetBoardYLength(); i++)
+        {
+            for (int j = 0; j < GetBoardXLength(); j++)
+            {
+                int randomChipIndex = GetRandomChipIndex();
+                board[i, j] = randomChipIndex;
+            }
+        }
+    }
+
+    public int GetRandomChipIndex()
+    {
+        return UnityEngine.Random.Range(0, chipsQty);
+    }
+
+    internal void Check3Matches()
+    {
+        shouldCheckMatches = true;
     }
 
     void Update()
     {
+        if (shouldDrawBoard)
+        {
+            DrawBoard();
+        }
+
         if (logBoard)
         {
             LogBoard();
@@ -32,74 +72,116 @@ public class BoardManager : MonoBehaviour
 
         if (shouldCheckMatches)
         {
-            CheckMatchesAllBoard();
+            Check3MatchesAllPositions();
         }
+    }
+
+    private void DrawBoard()
+    {
+        for (int i = 0; i < GetBoardYLength(); i++)
+        {
+            for (int j = 0; j < GetBoardXLength(); j++)
+            {
+                Coord position = new Coord(i, j);
+                gameScene.SetUpInsideChip(GetElementOnPosition(position), position.y, position.x);
+            }
+        }
+        shouldDrawBoard = false;
     }
 
     public void SetElementOnPosition(int element, Coord coord)
     {
-        board[coord.GetY(), coord.GetX()] = element;
-        Debug.Log($"Setting chip in {coord.ToString()} = {gameScene.ChipValueToString(element)}");
+        board[coord.y, coord.x] = element;
     }
 
     public int GetElementOnPosition(Coord coord)
     {
-        return board[coord.GetY(), coord.GetX()];
+        return board[coord.y, coord.x];
     }
 
-    private void CheckMatchesAllBoard()
+    private void Check3MatchesAllPositions()
     {
-
         for (int checkingPositionY = 0; checkingPositionY < GetBoardYLength(); checkingPositionY++)
         {
             for (int checkingPositionX = 0; checkingPositionX < board.GetLength(1); checkingPositionX++)
             {
-                CheckingPosition(new Coord(checkingPositionY, checkingPositionX));
+                Checking3Match(new Coord(checkingPositionY, checkingPositionX));
             }
         }
-        shouldCheckMatches = false;
     }
 
-    private void CheckingPosition(Coord coord)
+    private void Checking3Match(Coord coord)
     {
-        if (IsHorizontallyInsideBoard(coord.GetX(), 3))
+        CheckingHorizontal3Match(coord);
+        CheckingVertical3Match(coord);
+    }
+
+    private void CheckingHorizontal3Match(Coord coord)
+    {
+        List<Coord> line = coord.CreateLine(3, LineType.Horizontal);
+
+        if (IsLineInsideBoard(line) && IsA3Match(line))
         {
-            if (AreNextHorThreeTheSameChip(coord))
-            {
-                LogNextThreeHorPositions(coord);
-            }
+            scoreKeeper.AddToCurrentScore(_3MatchScore);
+            LogListCoords(line);
+            ProcessHorLine(line);
+            RefillHor(line);
+            shouldDrawBoard = true;
         }
+    }
 
-        if (IsVertInsideBoard(coord.GetY(), 3))
+    private void CheckingVertical3Match(Coord coord)
+    {
+        List<Coord> line = coord.CreateLine(3, LineType.Vertical);
+
+        if (IsLineInsideBoard(line) && IsA3Match(line))
         {
-            if (AreNextVertThreeTheSameChip(coord))
-            {
-                LogNextThreeVertPositions(coord);
-            }
+            scoreKeeper.AddToCurrentScore(_3MatchScore);
+            LogListCoords(line);
+            ProcessVertLine(line);
+            RefillVert(line);
+            shouldDrawBoard = true;
         }
     }
 
-    private bool AreNextHorThreeTheSameChip(Coord coord)
+    private bool IsA3Match(List<Coord> line)
     {
-        return (GetElementOnPosition(coord) == GetElementOnPosition(coord.AddX(1)))
-            && (GetElementOnPosition(coord.AddX(1)) == GetElementOnPosition(coord.AddX(2)));
+        for (int i = 0; i < line.Count - 1; i++)
+        {
+            int elem1 = GetElementOnPosition(line[i]);
+            int elem2 = GetElementOnPosition(line[i + 1]);
+            if (elem1 != elem2) return false;
+        }
+        return true;
     }
 
-
-    private bool AreNextVertThreeTheSameChip(Coord coord)
+    private bool IsLineInsideBoard(List<Coord> line)
     {
-        return (GetElementOnPosition(coord) == GetElementOnPosition(coord.AddY(1)))
-            && (GetElementOnPosition(coord.AddY(1)) == GetElementOnPosition(coord.AddY(2)));
+        bool isLineInside = true;
+        foreach (Coord coord in line)
+        {
+            if (!IsCoordInsideBoard(coord))
+            {
+                isLineInside = false;
+                break;
+            }
+        }
+        return isLineInside;
     }
 
-    private bool IsHorizontallyInsideBoard(int posX, int length)
+    private bool IsCoordInsideBoard(Coord coord)
     {
-        return GetBoardXLength() - 1 > posX + length - 1;
+        return IsInsideY(coord) && IsInsideX(coord);
     }
 
-    private bool IsVertInsideBoard(int posY, int length)
+    private bool IsInsideX(Coord coord)
     {
-        return GetBoardYLength() - 1 > posY + length - 1;
+        return GetBoardXLength() > coord.x && coord.x >= 0;
+    }
+
+    private bool IsInsideY(Coord coord)
+    {
+        return GetBoardYLength() > coord.y && coord.y >= 0;
     }
 
     private int GetBoardYLength()
@@ -114,7 +196,7 @@ public class BoardManager : MonoBehaviour
 
     private void LogBoard()
     {
-
+        string board = "";
         for (int i = 0; i < GetBoardYLength(); i++)
         {
             string line = $"Row({i}) [";
@@ -127,29 +209,117 @@ public class BoardManager : MonoBehaviour
                 }
             }
             line += "]";
-            Debug.Log(line);
+            board += $"{line}\n";
         }
+        Debug.Log(board);
         logBoard = false;
     }
 
-    private void LogNextThreeHorPositions(Coord coord)
+    private void ProcessHorLine(List<Coord> line)
     {
-        Debug.Log($"Chips [{coord.ToString()}],[{coord.AddX(1).ToString()}],[{coord.AddX(2).ToString()}] are equals");
+        RemoveChips(line);
+        BoobleUpHorizontalLine(line);
     }
 
-    private void LogNextThreeVertPositions(Coord coord)
+    private void BoobleUpHorizontalLine(List<Coord> line)
     {
-        Debug.Log($"Chips [{coord.ToString()}],[{coord.AddY(1).ToString()}],[{coord.AddY(2).ToString()}] are equals");
+        foreach (Coord coord in line)
+        {
+            BoobleCoordUpToTop(coord);
+        }
+    }
+
+    private void ProcessVertLine(List<Coord> line)
+    {
+        RemoveChips(line);
+        BoobleUpVerticalLine(line);
+    }
+
+    private void BoobleUpVerticalLine(List<Coord> line)
+    {
+        Coord originalCoord = line[0];
+        for (int i = 0; i < line.Count; i++)
+        {
+            BoobleCoordUpToTop(originalCoord);
+        }
+    }
+
+    private void BoobleCoordUpToTop(Coord coord)
+    {
+        int amountRows = GetAmountOfRowToTop(coord);
+        for (int i = 0; i < amountRows; i++)
+        {
+            Coord originCoord = coord.AddY(i);
+            Coord nextCoordUp = originCoord.AddY(1);
+            SwitchChips(originCoord, nextCoordUp);
+        }
+    }
+
+    private void RefillHor(List<Coord> line)
+    {
+        foreach (Coord coord in line)
+        {
+            RefillOnTop(coord);
+        }
+    }
+
+    private void RefillOnTop(Coord coord)
+    {
+        int delta = GetAmountOfRowToTop(coord);
+        SetElementOnPosition(GetRandomChipIndex(), coord.AddY(delta));
+    }
+
+    private void RefillVert(List<Coord> line)
+    {
+        int lastRow = GetBoardYLength() - 1;
+
+        for (int i = 0; i < line.Count; i++)
+        {
+            Coord coord = new Coord(lastRow - i, line[0].x);
+            SetElementOnPosition(GetRandomChipIndex(), coord);
+        }
+    }
+
+    private int GetAmountOfRowToTop(Coord coord) => GetBoardYLength() - 1 - coord.y;
+
+    private void LogListCoords(List<Coord> coords)
+    {
+        Debug.Log($"Chips [{Coord.ListDebugging(coords)}] are equals");
+    }
+
+    private void RemoveChips(List<Coord> coords)
+    {
+        foreach (Coord coord in coords)
+        {
+            RemoveChip(coord);
+        }
+    }
+
+    private void RemoveChip(Coord coord)
+    {
+        SetElementOnPosition(-1, coord);
     }
 
     public void SwitchChips(Coord coordChip1, Coord coordChip2)
     {
         int chip1Element = GetElementOnPosition(coordChip1);
         int chip2Element = GetElementOnPosition(coordChip2);
-        Debug.Log($"SwitchChips ({chip1Element}) {gameScene.ChipValueToString(chip1Element)} - {coordChip1}");
-        Debug.Log($"SwitchChips ({chip2Element}) {gameScene.ChipValueToString(chip2Element)} - {coordChip2}");
 
         SetElementOnPosition(chip1Element, coordChip2);
         SetElementOnPosition(chip2Element, coordChip1);
     }
+
+    internal bool CheckCoordMade3Match(Coord coord)
+    {
+        bool is3MatchMade = false;
+        List<List<Coord>> lineList = coord.Get3MLineInAllDirecctions();
+        foreach (List<Coord> line in lineList)
+        {
+            if (!IsLineInsideBoard(line)) continue;
+            if (!IsA3Match(line)) continue;
+            is3MatchMade = true;
+        }
+        return is3MatchMade;
+    }
+
 }

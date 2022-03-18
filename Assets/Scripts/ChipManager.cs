@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,10 +10,13 @@ public class ChipManager : MonoBehaviour
     SpriteRenderer chipRenderer;
     Color backgroundColor;
 
+    Color originalColor;
+
     private void Awake()
     {
         backgroundColor = Color.white;
         chipRenderer = GetComponent<SpriteRenderer>();
+        SaveOriginalColor();
     }
 
     void Update()
@@ -36,8 +40,15 @@ public class ChipManager : MonoBehaviour
         }
         else
         {
-            backgroundColor = Color.white;
+            backgroundColor = originalColor;
         }
+    }
+
+    private void SaveOriginalColor()
+    {
+        if (chipRenderer == null) return;
+
+        originalColor = chipRenderer.color;
     }
 
     public void ToggleSelection()
@@ -49,4 +60,12 @@ public class ChipManager : MonoBehaviour
     {
         isSelected = false;
     }
+
+    internal void SetSelection(bool v)
+    {
+        isSelected = v;
+    }
+
+    internal bool GetSelection() => isSelected;
+   
 }
