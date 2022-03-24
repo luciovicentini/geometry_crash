@@ -86,11 +86,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.adaptiveperformance": {
-<<<<<<< HEAD
-      "version": "3.0.2",
-=======
       "version": "4.0.0",
->>>>>>> b3c08eeea811f43214bae20961509e0b181b4bdb
       "depth": 1,
       "source": "registry",
       "dependencies": {
