@@ -9,7 +9,6 @@ public class ChipManager : MonoBehaviour
 
     SpriteRenderer chipRenderer;
     Color backgroundColor;
-
     Color originalColor;
 
     private void Awake()

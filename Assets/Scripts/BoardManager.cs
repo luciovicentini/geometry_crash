@@ -9,7 +9,6 @@ public class BoardManager : MonoBehaviour
     [SerializeField] bool logBoard;
     [SerializeField] bool shouldCheckMatches = false;
     [SerializeField] bool shouldDrawBoard = false;
-
     [SerializeField] int _3MatchScore = 1;
     int[,] board;
 

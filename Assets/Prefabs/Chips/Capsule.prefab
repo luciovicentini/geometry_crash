@@ -132,3 +132,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0ce9ccc2e03246b9b839212079445e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shouldPlayAnimation: 0
+  animations: []
+  animationChance: 1

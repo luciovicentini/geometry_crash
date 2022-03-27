@@ -5,26 +5,50 @@ using UnityEngine;
 
 public class ChipAnimator : MonoBehaviour
 {
-    [SerializeField] bool showPlayAnimation = false;
+    private const string IDLE_ANIM_NAME = "Idle";
+    [SerializeField] bool shouldStartAnim = false;
+    [SerializeField] List<AnimationClip> animations;
     Animator chipAnimator;
-    AnimatorManager animatorManager;
+    AnimatorManager animationManager;
+    private string currentState;
+
     private void Start()
     {
+        animationManager = FindObjectOfType<AnimatorManager>();
         chipAnimator = GetComponent<Animator>();
-        animatorManager = FindObjectOfType<AnimatorManager>();
     }
 
     void Update()
     {
-        if (chipAnimator == null) return;
-        if (ShouldPlayAnimation())
-        {
-            animatorManager.SetAnimation(chipAnimator);
-        }
+        if (!ShouldStartAnimation()) return;
+        AnimationClip animation = GetRandomAnimation();
+        String animationClipString = animation ? animation.name : GetIdleStateString();
+        ChangeAnimationState(animationClipString);
     }
 
-    private bool ShouldPlayAnimation()
+    void ChangeAnimationState(string newState)
     {
-        return showPlayAnimation || UnityEngine.Random.Range(0, 10000) == 1000;
+        if (currentState == newState) return;
+        chipAnimator.Play(newState);
+        currentState = newState;
+        shouldStartAnim = false;
     }
+
+    private bool ShouldStartAnimation()
+    {
+        return shouldStartAnim || animationManager.ShouldStartAnimation();
+    }
+
+    internal AnimationClip GetRandomAnimation()
+    {
+        if (animations.Count == 0) return null;
+        return animations[GetRandomAnimationIndex()];
+    }
+
+    internal string GetIdleStateString()
+    {
+        return IDLE_ANIM_NAME;
+    }
+
+    internal int GetRandomAnimationIndex() => UnityEngine.Random.Range(0, animations.Count);
 }
