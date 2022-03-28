@@ -5,12 +5,10 @@ using UnityEngine;
 
 public class ChipAnimator : MonoBehaviour
 {
-    private const string IDLE_ANIM_NAME = "Idle";
+
     [SerializeField] bool shouldStartAnim = false;
-    [SerializeField] List<AnimationClip> animations;
     Animator chipAnimator;
     AnimatorManager animationManager;
-    private string currentState;
 
     private void Start()
     {
@@ -21,34 +19,17 @@ public class ChipAnimator : MonoBehaviour
     void Update()
     {
         if (!ShouldStartAnimation()) return;
-        AnimationClip animation = GetRandomAnimation();
-        String animationClipString = animation ? animation.name : GetIdleStateString();
-        ChangeAnimationState(animationClipString);
+        StartChipAnimation();
     }
 
-    void ChangeAnimationState(string newState)
+    private void StartChipAnimation()
     {
-        if (currentState == newState) return;
-        chipAnimator.Play(newState);
-        currentState = newState;
+        chipAnimator.SetTrigger("StartAnimation");
         shouldStartAnim = false;
     }
 
     private bool ShouldStartAnimation()
     {
-        return shouldStartAnim || animationManager.ShouldStartAnimation();
+        return shouldStartAnim ||  animationManager.ShouldStartAnimation();
     }
-
-    internal AnimationClip GetRandomAnimation()
-    {
-        if (animations.Count == 0) return null;
-        return animations[GetRandomAnimationIndex()];
-    }
-
-    internal string GetIdleStateString()
-    {
-        return IDLE_ANIM_NAME;
-    }
-
-    internal int GetRandomAnimationIndex() => UnityEngine.Random.Range(0, animations.Count);
 }
