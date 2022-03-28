@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: -1411879109447223674}
   - component: {fileID: 7764588236645026960}
   - component: {fileID: -8739863118357464940}
+  - component: {fileID: -3656243427102493281}
   m_Layer: 0
   m_Name: Hexagon
   m_TagString: Untagged
@@ -230,6 +231,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe97fa20469f44413805cbeca4324e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startAnimation: 0
+  animationSpeed: 4
+--- !u!114 &-3656243427102493281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2662928245216355485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 659f70db08dbb4f73a01cb7fb2b37050, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   startAnimation: 0

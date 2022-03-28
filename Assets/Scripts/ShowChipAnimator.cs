@@ -15,7 +15,6 @@ public class ShowChipAnimator : MonoBehaviour
     void Start()
     {
         startScale = transform.localScale;
-        Debug.Log($"StartScale = {startScale}");
     }
 
     // Update is called once per frame
