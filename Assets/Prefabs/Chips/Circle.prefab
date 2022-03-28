@@ -180,6 +180,7 @@ GameObject:
   - component: {fileID: 18052827355453561}
   - component: {fileID: 7259509148238179383}
   - component: {fileID: 3967029219626760030}
+  - component: {fileID: 1723935587527344289}
   m_Layer: 0
   m_Name: Circle
   m_TagString: Untagged
@@ -302,3 +303,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shouldStartAnim: 0
+--- !u!114 &1723935587527344289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7601685037502133997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe97fa20469f44413805cbeca4324e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startAnimation: 0
+  animationSpeed: 4
