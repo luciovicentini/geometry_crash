@@ -15,12 +15,13 @@ public class AnimatorManager : MonoBehaviour
     public bool ShouldStartAnimation() => UnityEngine.Random.Range(0, animationChance)
         == UnityEngine.Random.Range(0, 10);
 
-    public void AnimateChipHide(GameObject chip)
+    public void AnimateChipHide(GameObject chip, bool destroyIt = false)
     {
         Debug.Log($"AnimateChipHide {chip}");
         chip.transform
             .LeanScale(Vector2.zero, destroyAnimationTime)
-            .setEaseOutQuad();
+            .setEaseOutQuad()
+            .setDestroyOnComplete(destroyIt);
     }
 
     public void AnimateChipShow(GameObject chip)
@@ -36,4 +37,6 @@ public class AnimatorManager : MonoBehaviour
     {
         return chip.transform.localScale * holderPaddingScale;
     }
+
+
 }

@@ -7,30 +7,25 @@ using UnityEngine;
 public class GameScene : MonoBehaviour
 {
     [SerializeField] GameObject boardBackground;
-    [SerializeField] float boardMargin = 1f;
     [SerializeField] int chipPerSizeAmount = 10;
     [SerializeField] GameObject holderChipPrefab;
     [SerializeField] List<GameObject> chipPrefabs;
 
     BoardManager boardManager;
-    Camera cam;
-    Vector2 startingPoint;
-    float holderSize;
-    private AnimatorManager animatorManager;
 
+    AnimatorManager animatorManager;
+    BackgroundManager backgroundManager;
     bool hasFinishDrawingBoard = false;
+
     void Awake()
     {
         boardManager = FindObjectOfType<BoardManager>();
         animatorManager = FindObjectOfType<AnimatorManager>();
-        cam = Camera.main;
+        backgroundManager = FindObjectOfType<BackgroundManager>();
     }
 
     void Start()
     {
-        SetBoardSize();
-        startingPoint = GetBoardBottomLeftPosition();
-        holderSize = GetHolderSize();
         SetUpHolderChips();
         boardManager.SetUpBoard(chipPerSizeAmount, chipPerSizeAmount);
         boardManager.SetUpChips(chipPrefabs.Count);
@@ -38,58 +33,15 @@ public class GameScene : MonoBehaviour
         StartCoroutine(boardManager.Check3MatchesAllPositions());
     }
 
-    void SetBoardSize()
-    {
-        float smallerScreenSideSize = IsWidthSmallerScreenSize() ? GetWidthScreenSize() : GetHeightScreenSize();
-        float boardSize = GetBoardSize(smallerScreenSideSize);
-        boardBackground.transform.localScale = new Vector2(boardSize, boardSize);
-        boardBackground.transform.position = new Vector2(0, 0);
-    }
-
     private float GetHolderSize()
     {
-        return GetBoardSizeFloat() / chipPerSizeAmount;
-    }
-
-    private float GetBoardSizeFloat()
-    {
-        return boardBackground.transform.localScale.x;
-    }
-
-    private float GetBoardSize(float smallerScreenSideSize)
-    {
-        return smallerScreenSideSize - (boardMargin * 2);
-    }
-
-    private Vector2 GetScreenSizeVector()
-    {
-        Vector2 topRightCorner = new Vector2(1, 1);
-        Vector2 edgeVector = cam.ViewportToWorldPoint(topRightCorner);
-        return edgeVector;
-    }
-
-    private Vector2 GetBoardBottomLeftPosition()
-    {
-        return new Vector2(boardBackground.transform.localScale.x / 2 * -1, boardBackground.transform.localScale.y / 2 * -1);
-    }
-
-    bool IsWidthSmallerScreenSize()
-    {
-        return GetWidthScreenSize() < GetHeightScreenSize();
-    }
-
-    float GetWidthScreenSize()
-    {
-        return GetScreenSizeVector().x * 2;
-    }
-
-    float GetHeightScreenSize()
-    {
-        return GetScreenSizeVector().y * 2;
+        return backgroundManager.GetBoardSizeFloat() / chipPerSizeAmount;
     }
 
     private void SetUpHolderChips()
     {
+        Vector2 startingPoint = backgroundManager.GetBoardBottomLeftPosition();
+        float holderSize = GetHolderSize();
         for (int row = 0; row < chipPerSizeAmount; row++)
         {
             for (int column = 0; column < chipPerSizeAmount; column++)
@@ -146,8 +98,14 @@ public class GameScene : MonoBehaviour
         foreach (Coord coord in line)
         {
             GameObject chip = GetHolderChipFromPosition(coord.y, coord.x).transform.GetChild(0).gameObject;
-            animatorManager.AnimateChipHide(chip);
+            animatorManager.AnimateChipHide(chip, true);
         }
+
+        /*  TODO: Dependiendo de si la linea es hor o vert se tienen que borrar las fichas de 
+            arriba y mostrarlas en la fila inferior desde la fila actual hasta la ultima fila.
+
+            Una vez que se termina de hacer toda la animación se tiene que continuar analizando el resto de las coordenadas.
+        */
     }
 
     private void RemoveChildren(GameObject holderChip)
