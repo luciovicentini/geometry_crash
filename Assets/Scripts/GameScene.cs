@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using CustomUtil;
 using UnityEngine;
 
 public class GameScene : MonoBehaviour
@@ -8,9 +9,6 @@ public class GameScene : MonoBehaviour
     [SerializeField] GameObject boardBackground;
     [SerializeField] float boardMargin = 1f;
     [SerializeField] int chipPerSizeAmount = 10;
-
-    [SerializeField][Range(0f, 1f)] float holderPaddingScale = 0.9f;
-
     [SerializeField] GameObject holderChipPrefab;
     [SerializeField] List<GameObject> chipPrefabs;
 
@@ -18,10 +16,13 @@ public class GameScene : MonoBehaviour
     Camera cam;
     Vector2 startingPoint;
     float holderSize;
+    private AnimatorManager animatorManager;
 
+    bool hasFinishDrawingBoard = false;
     void Awake()
     {
         boardManager = FindObjectOfType<BoardManager>();
+        animatorManager = FindObjectOfType<AnimatorManager>();
         cam = Camera.main;
     }
 
@@ -33,6 +34,8 @@ public class GameScene : MonoBehaviour
         SetUpHolderChips();
         boardManager.SetUpBoard(chipPerSizeAmount, chipPerSizeAmount);
         boardManager.SetUpChips(chipPrefabs.Count);
+        StartCoroutine(DrawBoard());
+        StartCoroutine(boardManager.Check3MatchesAllPositions());
     }
 
     void SetBoardSize()
@@ -91,26 +94,43 @@ public class GameScene : MonoBehaviour
         {
             for (int column = 0; column < chipPerSizeAmount; column++)
             {
-                Vector3 position = CalculateChipPosition(startingPoint, holderSize, row, column);
+                Vector2 position = CalculateChipPosition(startingPoint, holderSize, row, column);
                 GameObject holderChip = InstantiateChipHolder(position);
                 holderChip.name = GetHolderName(row, column);
             }
         }
     }
 
-    private static Vector3 CalculateChipPosition(Vector2 startingPoint, float holderSize, int i, int j)
+    private static Vector2 CalculateChipPosition(Vector2 startingPoint, float holderSize, int i, int j)
     {
         float xPosition = startingPoint.x + (holderSize * j) + holderSize / 2;
         float yPosition = startingPoint.y + (holderSize * i) + holderSize / 2;
-        Vector3 position = new Vector3(xPosition, yPosition, 0);
+        Vector2 position = new Vector2(xPosition, yPosition);
         return position;
     }
 
-    private GameObject InstantiateChipHolder(Vector3 position)
+    private GameObject InstantiateChipHolder(Vector2 position)
     {
         GameObject holderChip = Instantiate(holderChipPrefab, position, Quaternion.identity, gameObject.transform);
         holderChip.transform.localScale = new Vector2(GetHolderSize(), GetHolderSize());
         return holderChip;
+    }
+
+    private IEnumerator DrawBoard()
+    {
+        hasFinishDrawingBoard = false;
+        Debug.Log("DrawingBoard");
+        for (int i = 0; i < boardManager.GetBoardYLength(); i++)
+        {
+            for (int j = 0; j < boardManager.GetBoardXLength(); j++)
+            {
+                Coord position = new Coord(i, j);
+                Debug.Log($"DrawingBoard - SetupChipOn {position.ToString()}");
+                SetUpInsideChip(boardManager.GetElementOnPosition(position), position.y, position.x);
+                yield return new WaitForSeconds(0.01f);
+            }
+        }
+        hasFinishDrawingBoard = true;
     }
     
     public void SetUpInsideChip(int chipIndex, int row, int column)
@@ -119,6 +139,15 @@ public class GameScene : MonoBehaviour
         bool wasChipSelected = GetSelection(holderChip);
         RemoveChildren(holderChip);
         InstantiateInsideChip(holderChip, chipIndex, wasChipSelected);
+    }
+
+    internal void process3MLine(List<Coord> line)
+    {
+        foreach (Coord coord in line)
+        {
+            GameObject chip = GetHolderChipFromPosition(coord.y, coord.x).transform.GetChild(0).gameObject;
+            animatorManager.AnimateChipHide(chip);
+        }
     }
 
     private void RemoveChildren(GameObject holderChip)
@@ -139,16 +168,12 @@ public class GameScene : MonoBehaviour
     private void InstantiateInsideChip(GameObject holderChip, int chipIndex, bool isSelected)
     {
         GameObject insideChip = Instantiate(chipPrefabs[chipIndex], holderChip.transform.position, Quaternion.identity, holderChip.transform);
-        insideChip.transform.localScale = new Vector2(
-            insideChip.transform.localScale.x * holderPaddingScale,
-            insideChip.transform.localScale.y * holderPaddingScale);
-        
-        insideChip.GetComponent<ChipManager>().SetSelection(isSelected);
+        insideChip.GetComponent<ChipSelection>().SetSelection(isSelected);
     }
 
     private bool GetSelection(GameObject holderChip)
     {
-        ChipManager cm = holderChip.GetComponentInChildren<ChipManager>();
+        ChipSelection cm = holderChip.GetComponentInChildren<ChipSelection>();
         if (cm == null) return false;
         return cm.GetSelection();
     }
@@ -158,4 +183,6 @@ public class GameScene : MonoBehaviour
         if (value == -1) return "Empty";
         return chipPrefabs[value].name;
     }
+
+    public bool HasFinishDrawingBoard() => hasFinishDrawingBoard;
 }

@@ -7,16 +7,34 @@ public class ChipAnimator : MonoBehaviour
 {
 
     [SerializeField] bool shouldStartAnim = false;
-    Animator chipAnimator;
+
+    // Animator chipAnimator;
     AnimatorManager animationManager;
+
+    private void Awake()
+    {
+        animationManager = FindObjectOfType<AnimatorManager>();
+
+        // chipAnimator = GetComponent<Animator>();
+
+    }
 
     private void Start()
     {
-        animationManager = FindObjectOfType<AnimatorManager>();
-        chipAnimator = GetComponent<Animator>();
+        ShowChip();
     }
 
-    void Update()
+    public void ShowChip()
+    {
+        animationManager.AnimateChipShow(gameObject);
+    }
+
+    public void HideChip()
+    {
+        animationManager.AnimateChipHide(gameObject);
+    }
+
+    /* void Update()
     {
         if (!ShouldStartAnimation()) return;
         StartChipAnimation();
@@ -30,6 +48,6 @@ public class ChipAnimator : MonoBehaviour
 
     private bool ShouldStartAnimation()
     {
-        return shouldStartAnim ||  animationManager.ShouldStartAnimation();
-    }
+        return shouldStartAnim || animationManager.ShouldStartAnimation();
+    } */
 }

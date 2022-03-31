@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,5 +37,10 @@ public class HideChipAnimation : MonoBehaviour
     {
         return transform.localScale.x - tolerance <= hideScale.x &&
          transform.localScale.y - tolerance <= hideScale.y;
+    }
+
+    internal void StartAnimation()
+    {
+        startAnimation = true;
     }
 }

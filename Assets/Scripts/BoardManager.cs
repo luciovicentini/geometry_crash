@@ -32,10 +32,10 @@ public class BoardManager : MonoBehaviour
     public void SetUpChips(int chipsQty)
     {
         this.chipsQty = chipsQty;
-        PopulateBoard();
+        RandomizeBoard();
     }
 
-    private void PopulateBoard()
+    private void RandomizeBoard()
     {
         for (int i = 0; i < GetBoardYLength(); i++)
         {
@@ -47,19 +47,11 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public int GetRandomChipIndex()
-    {
-        return UnityEngine.Random.Range(0, chipsQty);
-    }
-
-    internal void Check3Matches()
-    {
-        shouldCheckMatches = true;
-    }
+    public int GetRandomChipIndex() => UnityEngine.Random.Range(0, chipsQty);
 
     void Update()
     {
-        if (shouldDrawBoard)
+        /* if (shouldDrawBoard)
         {
             DrawBoard();
         }
@@ -72,39 +64,32 @@ public class BoardManager : MonoBehaviour
         if (shouldCheckMatches)
         {
             Check3MatchesAllPositions();
-        }
+        } */
     }
 
-    private void DrawBoard()
+    public void SetElementOnPosition(int element, Coord coord) => board[coord.y, coord.x] = element;
+
+    public int GetElementOnPosition(Coord coord) => board[coord.y, coord.x];
+
+    public IEnumerator Check3MatchesAllPositions()
     {
-        for (int i = 0; i < GetBoardYLength(); i++)
+        yield return new WaitUntil(() => gameScene.HasFinishDrawingBoard());
+        Debug.Log($"Check3MatchesAllPositions");
+        for (int posY = 0; posY < GetBoardYLength(); posY++)
         {
-            for (int j = 0; j < GetBoardXLength(); j++)
+            for (int posX = 0; posX < GetBoardXLength(); posX++)
             {
-                Coord position = new Coord(i, j);
-                gameScene.SetUpInsideChip(GetElementOnPosition(position), position.y, position.x);
-            }
-        }
-        shouldDrawBoard = false;
-    }
-
-    public void SetElementOnPosition(int element, Coord coord)
-    {
-        board[coord.y, coord.x] = element;
-    }
-
-    public int GetElementOnPosition(Coord coord)
-    {
-        return board[coord.y, coord.x];
-    }
-
-    private void Check3MatchesAllPositions()
-    {
-        for (int checkingPositionY = 0; checkingPositionY < GetBoardYLength(); checkingPositionY++)
-        {
-            for (int checkingPositionX = 0; checkingPositionX < board.GetLength(1); checkingPositionX++)
-            {
-                Checking3Match(new Coord(checkingPositionY, checkingPositionX));
+                Coord coord = new Coord(posY, posX);
+                Debug.Log($"Check3MatchesAllPositions - Checking coord = {coord.ToString()}");
+                if (CheckCoordMade3Match(coord))
+                {
+                    Checking3Match(coord);
+                    yield break;
+                }
+                else
+                {
+                    yield return null;
+                }
             }
         }
     }
@@ -125,7 +110,7 @@ public class BoardManager : MonoBehaviour
             LogListCoords(line);
             ProcessHorLine(line);
             RefillHor(line);
-            shouldDrawBoard = true;
+            gameScene.process3MLine(line);
         }
     }
 
@@ -139,7 +124,7 @@ public class BoardManager : MonoBehaviour
             LogListCoords(line);
             ProcessVertLine(line);
             RefillVert(line);
-            shouldDrawBoard = true;
+            gameScene.process3MLine(line);
         }
     }
 
@@ -183,12 +168,12 @@ public class BoardManager : MonoBehaviour
         return GetBoardYLength() > coord.y && coord.y >= 0;
     }
 
-    private int GetBoardYLength()
+    public int GetBoardYLength()
     {
         return board.GetLength(0);
     }
 
-    private int GetBoardXLength()
+    public int GetBoardXLength()
     {
         return board.GetLength(1);
     }
@@ -310,15 +295,14 @@ public class BoardManager : MonoBehaviour
 
     internal bool CheckCoordMade3Match(Coord coord)
     {
-        bool is3MatchMade = false;
+        bool is3Match = false;
         List<List<Coord>> lineList = coord.Get3MLineInAllDirecctions();
         foreach (List<Coord> line in lineList)
         {
             if (!IsLineInsideBoard(line)) continue;
             if (!IsA3Match(line)) continue;
-            is3MatchMade = true;
+            is3Match = true;
         }
-        return is3MatchMade;
+        return is3Match;
     }
-
 }

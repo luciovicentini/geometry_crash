@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ClickDetector : MonoBehaviour
 {
-    ChipManager chip;
+    ChipSelection chip;
     ChipSwitcher chipSwitcher;
 
     private void Awake() {
@@ -13,9 +13,11 @@ public class ClickDetector : MonoBehaviour
 
     private void OnMouseDown() 
     {
-        chip = GetComponentInChildren<ChipManager>();
+        chip = GetComponentInChildren<ChipSelection>();
         if (chip == null) return;
-        chip.ToggleSelection();
-        chipSwitcher.SetChipClicked(chip);
+        
+        
+        // chip.ToggleSelection();
+        // chipSwitcher.SetChipClicked(chip);
     }
 }

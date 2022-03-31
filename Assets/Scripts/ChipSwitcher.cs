@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class ChipSwitcher : MonoBehaviour
 {
-    ChipManager chip1;
+    ChipSelection chip1;
 
-    ChipManager chip2;
+    ChipSelection chip2;
 
     BoardManager boardManager;
 
@@ -17,8 +17,7 @@ public class ChipSwitcher : MonoBehaviour
         boardManager = FindObjectOfType<BoardManager>();
     }
 
-
-    public void SetChipClicked(ChipManager selectedChip)
+    public void SetChipClicked(ChipSelection selectedChip)
     {
         if (chip1 == null)
         {
@@ -42,11 +41,19 @@ public class ChipSwitcher : MonoBehaviour
             {
                 Coord coordChip1 = GetCoordFromChip(chip1);
                 Coord coordChip2 = GetCoordFromChip(chip2);
+                chip1.GetComponent<HideChipAnimation>().StartAnimation();
+                chip2.GetComponent<HideChipAnimation>().StartAnimation();
                 boardManager.SwitchChips(coordChip1, coordChip2);
+
+                chip1.GetComponent<ShowChipAnimator>().StartAnimation();
+                chip2.GetComponent<ShowChipAnimator>().StartAnimation();
 
                 if (HasA3MatchFormed(coordChip1, coordChip2))
                 {
-                    boardManager.Check3Matches();
+                    // TODO antes de checkear si hay matches deberia hacer la animacion de las dos chips.
+
+                    
+                    // boardManager.Check3Matches();
                 }
                 else
                 {
@@ -67,7 +74,7 @@ public class ChipSwitcher : MonoBehaviour
         boardManager.CheckCoordMade3Match(coordChip1)
         || boardManager.CheckCoordMade3Match(coordChip2);
 
-    private bool AreContinuous(ChipManager chip1, ChipManager chip2)
+    private bool AreContinuous(ChipSelection chip1, ChipSelection chip2)
     {
         Coord chip1Coords = GetCoordFromChip(chip1);
         Coord chip2Coords = GetCoordFromChip(chip2);
@@ -114,7 +121,7 @@ public class ChipSwitcher : MonoBehaviour
         chip2 = null;
     }
 
-    private Coord GetCoordFromChip(ChipManager chip)
+    private Coord GetCoordFromChip(ChipSelection chip)
     {
         string name = chip.transform.parent.gameObject.name;
 

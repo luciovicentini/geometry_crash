@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChipManager : MonoBehaviour
+public class ChipSelection : MonoBehaviour
 {
     [SerializeField] bool isSelected = false;
 

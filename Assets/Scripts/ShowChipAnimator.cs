@@ -36,7 +36,7 @@ public class ShowChipAnimator : MonoBehaviour
         resetScale = false;
         float delta = animationSpeed * Time.deltaTime;
         transform.localScale = Vector2.Lerp(transform.localScale, startScale, delta);
-        if (IsAnimationEnded())
+        if (DoesAnimationEnded())
         {
             startAnimation = false;
             resetScale = true;
@@ -44,9 +44,14 @@ public class ShowChipAnimator : MonoBehaviour
         }
     }
 
-    private bool IsAnimationEnded()
+    public bool DoesAnimationEnded()
     {
         return transform.localScale.x + tolerance > startScale.x &&
          transform.localScale.y + tolerance > startScale.y;
+    }
+
+    internal void StartAnimation()
+    {
+        startAnimation = true;
     }
 }
