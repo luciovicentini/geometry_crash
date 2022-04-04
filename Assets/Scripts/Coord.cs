@@ -102,5 +102,84 @@ namespace CustomUtil
 
             return newOrigin.CreateLine(3, type);
         }
+
+        public static LineType GetLineType(List<Coord> line)
+        {
+            if (IsLineHorizontal(line)) return LineType.Horizontal;
+            if (IsLineVertical(line)) return LineType.Vertical;
+            throw new Exception();
+        }
+
+        private static bool IsLineHorizontal(List<Coord> line)
+        {
+            int yCoord = line[0].y;
+            int xCoord = line[0].x;
+
+            foreach (Coord coord in line)
+            {
+                if (yCoord != coord.y)
+                {
+                    return false;
+                }
+                else
+                {
+                    yCoord = coord.y;
+                }
+
+                if (xCoord == coord.x || xCoord == coord.x - 1 || xCoord == coord.x + 1)
+                {
+                    xCoord = coord.x;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static bool IsLineVertical(List<Coord> line)
+        {
+            int yCoord = line[0].y;
+            int xCoord = line[0].x;
+
+            foreach (Coord coord in line)
+            {
+                if (xCoord != coord.x)
+                {
+                    return false;
+                }
+                else
+                {
+                    xCoord = coord.x;
+                }
+
+                if (yCoord == coord.y || yCoord == coord.y - 1 || yCoord == coord.y + 1)
+                {
+                    yCoord = coord.y;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        internal static Coord GetUpperCoord(List<Coord> line)
+        {
+            if (GetLineType(line) != LineType.Vertical) throw new Exception();
+
+            int yUpperBound = line[0].y;
+            foreach (Coord coord in line)
+            {
+                if (yUpperBound < coord.y)
+                {
+                    yUpperBound = coord.y;
+                }
+            }
+
+            return new Coord(yUpperBound, line[0].x);
+        }
     }
 }

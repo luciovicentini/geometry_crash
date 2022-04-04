@@ -9,6 +9,7 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField][Range(0, 9999)] int animationChance = 1000;
     [SerializeField] float destroyAnimationTime = 0.1f;
     [SerializeField] float creationAnimationTime = 0.1f;
+    [SerializeField] float fallingAnimationTime = 0.1f;
 
     [SerializeField][Range(0f, 1f)] float holderPaddingScale = 0.9f;
 
@@ -27,7 +28,7 @@ public class AnimatorManager : MonoBehaviour
     public void AnimateChipShow(GameObject chip)
     {
         Vector2 finalScale = GetScale(chip);
-        transform.localScale = Vector2.zero;
+        chip.transform.localScale = Vector2.zero;
         chip.transform
             .LeanScale(finalScale, creationAnimationTime)
             .setEaseOutQuad();
@@ -38,5 +39,23 @@ public class AnimatorManager : MonoBehaviour
         return chip.transform.localScale * holderPaddingScale;
     }
 
+    internal void AnimateFallingChips(List<GameObject> chips, int amountSteps)
+    {
+        Debug.Log("Animating Horizontal Falling");
+        foreach (GameObject chip in chips)
+        {
+            AnimateFallingChip(chip, amountSteps);
+        }
+    }
+
+    private void AnimateFallingChip(GameObject chip, float amount)
+    {
+        chip.transform
+            .LeanMoveLocalY(amount, fallingAnimationTime)
+            .setEaseOutQuart();
+    }
+
+    internal float GetDestroyAnimationTime() => destroyAnimationTime;
+    internal float GetFallingAnimationTime() => fallingAnimationTime;
 
 }

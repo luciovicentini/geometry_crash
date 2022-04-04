@@ -435,6 +435,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4424b92cf06443daafcb33af4b6e95c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boardMargin: 0.2
 --- !u!1 &404004436
 GameObject:
   m_ObjectHideFlags: 0
@@ -594,7 +595,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardBackground: {fileID: 364539205}
-  boardMargin: 0.2
   chipPerSizeAmount: 10
   holderChipPrefab: {fileID: 6110749990763345529, guid: 137a73b54354a49c3948b8adb02afb90, type: 3}
   chipPrefabs:

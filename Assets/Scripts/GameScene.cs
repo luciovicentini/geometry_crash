@@ -16,6 +16,7 @@ public class GameScene : MonoBehaviour
     AnimatorManager animatorManager;
     BackgroundManager backgroundManager;
     bool hasFinishDrawingBoard = false;
+    private readonly string NAME_DIVIDER = "-";
 
     void Awake()
     {
@@ -84,7 +85,7 @@ public class GameScene : MonoBehaviour
         }
         hasFinishDrawingBoard = true;
     }
-    
+
     public void SetUpInsideChip(int chipIndex, int row, int column)
     {
         GameObject holderChip = GetHolderChipFromPosition(row, column);
@@ -95,17 +96,88 @@ public class GameScene : MonoBehaviour
 
     internal void process3MLine(List<Coord> line)
     {
-        foreach (Coord coord in line)
-        {
-            GameObject chip = GetHolderChipFromPosition(coord.y, coord.x).transform.GetChild(0).gameObject;
-            animatorManager.AnimateChipHide(chip, true);
-        }
 
+        if (Coord.GetLineType(line) == LineType.Horizontal)
+        {
+            StartCoroutine(AnimateHorizontalFalling(line));
+        }
+        if (Coord.GetLineType(line) == LineType.Vertical)
+        {
+            StartCoroutine(AnimateVerticalFalling(line));
+            Debug.Log($"{line.ToString()} is Vertical");
+        }
         /*  TODO: Dependiendo de si la linea es hor o vert se tienen que borrar las fichas de 
             arriba y mostrarlas en la fila inferior desde la fila actual hasta la ultima fila.
 
             Una vez que se termina de hacer toda la animación se tiene que continuar analizando el resto de las coordenadas.
         */
+    }
+
+    private void AnimateDestroyingChips(List<Coord> line)
+    {
+        Debug.Log("Animating destroying Chips");
+        foreach (Coord coord in line)
+        {
+            GameObject chip = GetChip(coord);
+            animatorManager.AnimateChipHide(chip, true);
+        }
+
+    }
+
+    private IEnumerator AnimateHorizontalFalling(List<Coord> line)
+    {
+        AnimateDestroyingChips(line);
+        yield return new WaitForSeconds(animatorManager.GetDestroyAnimationTime());
+
+        Debug.Log("Animating Falling Chips");
+        List<GameObject> chipsToAnimate = GetChipsAboveLine(line);
+        animatorManager.AnimateFallingChips(chipsToAnimate, 1);
+        yield return new WaitForSeconds(animatorManager.GetFallingAnimationTime());
+
+        SwitchChipHolder(chipsToAnimate, 1);
+    }
+
+    private IEnumerator AnimateVerticalFalling(List<Coord> line)
+    {
+        AnimateDestroyingChips(line);
+        yield return new WaitForSeconds(animatorManager.GetDestroyAnimationTime());
+
+        Debug.Log("Animating Falling Chips");
+        List<GameObject> chipsToAnimate = GetChipsAboveCoord(Coord.GetUpperCoord(line));
+        animatorManager.AnimateFallingChips(chipsToAnimate, 3);
+        yield return new WaitForSeconds(animatorManager.GetFallingAnimationTime());
+
+        SwitchChipHolder(chipsToAnimate, 3);
+    }
+
+    private void SwitchChipHolder(List<GameObject> chips, int amount)
+    {
+        foreach (GameObject chip in chips)
+        {
+            GameObject chipHolderOld = chip.transform.parent.gameObject;
+            string oldParentName = chipHolderOld.name;
+            Coord oldParentCoord = GetCoordFromChipHolderName(oldParentName);
+            GameObject newParent = GetHolderChipFromPosition(oldParentCoord.y - amount, oldParentCoord.x);
+            chip.transform.SetParent(newParent.transform);
+            chip.transform.localPosition = new Vector2(0, 0);
+        }
+    }
+
+    private Coord GetCoordFromChipHolderName(string oldParentName)
+    {
+        return new Coord(GetYCoordFromName(oldParentName), GetXCoordFromName(oldParentName));
+    }
+
+    private int GetYCoordFromName(string oldParentName)
+    {
+        int dividerIndex = oldParentName.IndexOf(NAME_DIVIDER);
+        return int.Parse(oldParentName.Substring(0, dividerIndex - 1));
+    }
+
+    private int GetXCoordFromName(string oldParentName)
+    {
+        int dividerIndex = oldParentName.IndexOf(NAME_DIVIDER);
+        return int.Parse(oldParentName.Substring(dividerIndex + 1));
     }
 
     private void RemoveChildren(GameObject holderChip)
@@ -121,7 +193,12 @@ public class GameScene : MonoBehaviour
         return GameObject.Find(GetHolderName(row, column));
     }
 
-    private string GetHolderName(int row, int column) => $"{row} - {column}";
+    private GameObject GetChip(Coord coord)
+    {
+        return GetHolderChipFromPosition(coord.y, coord.x).transform.GetChild(0).gameObject;
+    }
+
+    private string GetHolderName(int row, int column) => $"{row} {NAME_DIVIDER} {column}";
 
     private void InstantiateInsideChip(GameObject holderChip, int chipIndex, bool isSelected)
     {
@@ -143,4 +220,27 @@ public class GameScene : MonoBehaviour
     }
 
     public bool HasFinishDrawingBoard() => hasFinishDrawingBoard;
+
+    private List<GameObject> GetChipsAboveLine(List<Coord> line)
+    {
+        List<GameObject> items = new List<GameObject>();
+
+        foreach (Coord coord in line)
+        {
+            items.AddRange(GetChipsAboveCoord(coord));
+        }
+
+        return items;
+    }
+
+    private List<GameObject> GetChipsAboveCoord(Coord coord)
+    {
+        List<GameObject> items = new List<GameObject>();
+
+        for (int i = coord.y + 1; i < chipPerSizeAmount; i++)
+        {
+            items.Add(GetChip(new Coord(i, coord.x)));
+        }
+        return items;
+    }
 }

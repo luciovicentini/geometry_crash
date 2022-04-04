@@ -96,6 +96,7 @@ public class BoardManager : MonoBehaviour
 
     private void Checking3Match(Coord coord)
     {
+        // TODO: Ver que pasa cuando en la misma coordinada se encuentra un 3M horizontal y vertical.
         CheckingHorizontal3Match(coord);
         CheckingVertical3Match(coord);
     }
