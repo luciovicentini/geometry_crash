@@ -48,17 +48,17 @@ public class ChipSwitcher : MonoBehaviour
                 chip1.GetComponent<ShowChipAnimator>().StartAnimation();
                 chip2.GetComponent<ShowChipAnimator>().StartAnimation();
 
-                if (HasA3MatchFormed(coordChip1, coordChip2))
-                {
+                // if (HasA3MatchFormed(coordChip1, coordChip2))
+                // {
                     // TODO antes de checkear si hay matches deberia hacer la animacion de las dos chips.
 
                     
                     // boardManager.Check3Matches();
-                }
-                else
-                {
-                    boardManager.SwitchChips(coordChip2, coordChip1);
-                }
+                // }
+                // else
+                // {
+                    // boardManager.SwitchChips(coordChip2, coordChip1);
+                // }
                 ForgetSelectedChips();
             }
             else
@@ -70,9 +70,9 @@ public class ChipSwitcher : MonoBehaviour
         }
     }
 
-    private bool HasA3MatchFormed(Coord coordChip1, Coord coordChip2) =>
-        boardManager.CheckCoordMade3Match(coordChip1)
-        || boardManager.CheckCoordMade3Match(coordChip2);
+    // private bool HasA3MatchFormed(Coord coordChip1, Coord coordChip2) =>
+    //     boardManager.CheckCoordMade3Match(coordChip1)
+    //     || boardManager.CheckCoordMade3Match(coordChip2);
 
     private bool AreContinuous(ChipSelection chip1, ChipSelection chip2)
     {
@@ -94,19 +94,6 @@ public class ChipSwitcher : MonoBehaviour
         return false;
     }
 
-    private int GetYCoordFromName(string name)
-    {
-        int dividerIndex = GetDividerIndex(name);
-        return int.Parse(name.Substring(0, dividerIndex).Trim());
-    }
-
-    private int GetXCoordFromName(string name)
-    {
-        int dividerIndex = GetDividerIndex(name);
-        string s = name.Substring(dividerIndex + 1, name.Length - dividerIndex - 1).Trim();
-        return int.Parse(s);
-    }
-
     private static int GetDividerIndex(string name)
     {
         return name.IndexOf("-");
@@ -121,13 +108,5 @@ public class ChipSwitcher : MonoBehaviour
         chip2 = null;
     }
 
-    private Coord GetCoordFromChip(ChipSelection chip)
-    {
-        string name = chip.transform.parent.gameObject.name;
-
-        int xCoord = GetXCoordFromName(name);
-        int yCoord = GetYCoordFromName(name);
-
-        return new Coord(yCoord, xCoord);
-    }
+    private Coord GetCoordFromChip(ChipSelection chip) => Coord.GetCoordFromChipHolderName(chip.transform.parent.gameObject.name);
 }

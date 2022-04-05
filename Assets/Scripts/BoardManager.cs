@@ -7,9 +7,7 @@ using UnityEngine;
 public class BoardManager : MonoBehaviour
 {
     [SerializeField] bool logBoard;
-    [SerializeField] bool shouldCheckMatches = false;
-    [SerializeField] bool shouldDrawBoard = false;
-    [SerializeField] int _3MatchScore = 1;
+
     int[,] board;
 
     int chipsQty = 0;
@@ -17,11 +15,23 @@ public class BoardManager : MonoBehaviour
     GameScene gameScene;
     ScoreKeeper scoreKeeper;
 
+    internal List<Coord> GetAllCoords()
+    {
+        List<Coord> coords = new List<Coord>();
+        for (int posY = 0; posY < GetBoardYLength(); posY++)
+        {
+            for (int posX = 0; posX < GetBoardXLength(); posX++)
+            {
+                coords.Add(new Coord(posY, posX));
+            }
+        }
+        return coords;
+    }
+
     void Awake()
     {
         gameScene = FindObjectOfType<GameScene>();
         scoreKeeper = FindObjectOfType<ScoreKeeper>();
-        shouldDrawBoard = true;
     }
 
     public void SetUpBoard(int rows, int columns)
@@ -29,14 +39,11 @@ public class BoardManager : MonoBehaviour
         board = new int[rows, columns];
     }
 
-    public void SetUpChips(int chipsQty)
+    public void RandomizeBoard()
     {
-        this.chipsQty = chipsQty;
-        RandomizeBoard();
-    }
+        SetUpBoard(gameScene.GetChipPerSizeAmount(), gameScene.GetChipPerSizeAmount());
+        chipsQty = gameScene.GetAmountOfChipElements();
 
-    private void RandomizeBoard()
-    {
         for (int i = 0; i < GetBoardYLength(); i++)
         {
             for (int j = 0; j < GetBoardXLength(); j++)
@@ -51,96 +58,34 @@ public class BoardManager : MonoBehaviour
 
     void Update()
     {
-        /* if (shouldDrawBoard)
-        {
-            DrawBoard();
-        }
-
         if (logBoard)
         {
             LogBoard();
         }
-
-        if (shouldCheckMatches)
-        {
-            Check3MatchesAllPositions();
-        } */
     }
 
     public void SetElementOnPosition(int element, Coord coord) => board[coord.y, coord.x] = element;
 
     public int GetElementOnPosition(Coord coord) => board[coord.y, coord.x];
 
-    public IEnumerator Check3MatchesAllPositions()
+    public void Proccess3Match(List<Coord> line)
     {
-        yield return new WaitUntil(() => gameScene.HasFinishDrawingBoard());
-        Debug.Log($"Check3MatchesAllPositions");
-        for (int posY = 0; posY < GetBoardYLength(); posY++)
+        scoreKeeper.ScoreLine();
+        LogListCoords(line);
+        if (Coord.GetLineType(line) == LineType.Horizontal)
         {
-            for (int posX = 0; posX < GetBoardXLength(); posX++)
-            {
-                Coord coord = new Coord(posY, posX);
-                Debug.Log($"Check3MatchesAllPositions - Checking coord = {coord.ToString()}");
-                if (CheckCoordMade3Match(coord))
-                {
-                    Checking3Match(coord);
-                    yield break;
-                }
-                else
-                {
-                    yield return null;
-                }
-            }
-        }
-    }
-
-    private void Checking3Match(Coord coord)
-    {
-        // TODO: Ver que pasa cuando en la misma coordinada se encuentra un 3M horizontal y vertical.
-        CheckingHorizontal3Match(coord);
-        CheckingVertical3Match(coord);
-    }
-
-    private void CheckingHorizontal3Match(Coord coord)
-    {
-        List<Coord> line = coord.CreateLine(3, LineType.Horizontal);
-
-        if (IsLineInsideBoard(line) && IsA3Match(line))
-        {
-            scoreKeeper.AddToCurrentScore(_3MatchScore);
-            LogListCoords(line);
             ProcessHorLine(line);
             RefillHor(line);
-            gameScene.process3MLine(line);
         }
-    }
-
-    private void CheckingVertical3Match(Coord coord)
-    {
-        List<Coord> line = coord.CreateLine(3, LineType.Vertical);
-
-        if (IsLineInsideBoard(line) && IsA3Match(line))
+        else
         {
-            scoreKeeper.AddToCurrentScore(_3MatchScore);
-            LogListCoords(line);
             ProcessVertLine(line);
             RefillVert(line);
-            gameScene.process3MLine(line);
         }
+        gameScene.process3MLine(line);
     }
 
-    private bool IsA3Match(List<Coord> line)
-    {
-        for (int i = 0; i < line.Count - 1; i++)
-        {
-            int elem1 = GetElementOnPosition(line[i]);
-            int elem2 = GetElementOnPosition(line[i + 1]);
-            if (elem1 != elem2) return false;
-        }
-        return true;
-    }
-
-    private bool IsLineInsideBoard(List<Coord> line)
+    public bool IsLineInsideBoard(List<Coord> line)
     {
         bool isLineInside = true;
         foreach (Coord coord in line)
@@ -292,18 +237,5 @@ public class BoardManager : MonoBehaviour
 
         SetElementOnPosition(chip1Element, coordChip2);
         SetElementOnPosition(chip2Element, coordChip1);
-    }
-
-    internal bool CheckCoordMade3Match(Coord coord)
-    {
-        bool is3Match = false;
-        List<List<Coord>> lineList = coord.Get3MLineInAllDirecctions();
-        foreach (List<Coord> line in lineList)
-        {
-            if (!IsLineInsideBoard(line)) continue;
-            if (!IsA3Match(line)) continue;
-            is3Match = true;
-        }
-        return is3Match;
     }
 }

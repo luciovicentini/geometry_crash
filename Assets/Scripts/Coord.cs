@@ -13,7 +13,7 @@ namespace CustomUtil
     {
         public int x { get; set; }
         public int y { get; set; }
-
+        internal static string NAME_DIVIDER = "-";
 
         public Coord()
         {
@@ -180,6 +180,21 @@ namespace CustomUtil
             }
 
             return new Coord(yUpperBound, line[0].x);
+        }
+
+        internal static Coord GetCoordFromChipHolderName(string oldParentName)
+        {
+            return new Coord(GetYCoordFromName(oldParentName), GetXCoordFromName(oldParentName));
+        }
+        private static int GetYCoordFromName(string oldParentName)
+        {
+            int dividerIndex = oldParentName.IndexOf(NAME_DIVIDER);
+            return int.Parse(oldParentName.Substring(0, dividerIndex - 1));
+        }
+        private static int GetXCoordFromName(string oldParentName)
+        {
+            int dividerIndex = oldParentName.IndexOf(NAME_DIVIDER);
+            return int.Parse(oldParentName.Substring(dividerIndex + 1));
         }
     }
 }

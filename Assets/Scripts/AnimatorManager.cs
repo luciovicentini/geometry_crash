@@ -8,7 +8,7 @@ public class AnimatorManager : MonoBehaviour
 {
     [SerializeField][Range(0, 9999)] int animationChance = 1000;
     [SerializeField] float destroyAnimationTime = 0.1f;
-    [SerializeField] float creationAnimationTime = 0.1f;
+    [SerializeField] float createAnimationTime = 0.1f;
     [SerializeField] float fallingAnimationTime = 0.1f;
 
     [SerializeField][Range(0f, 1f)] float holderPaddingScale = 0.9f;
@@ -30,7 +30,7 @@ public class AnimatorManager : MonoBehaviour
         Vector2 finalScale = GetScale(chip);
         chip.transform.localScale = Vector2.zero;
         chip.transform
-            .LeanScale(finalScale, creationAnimationTime)
+            .LeanScale(finalScale, createAnimationTime)
             .setEaseOutQuad();
     }
 
@@ -56,6 +56,7 @@ public class AnimatorManager : MonoBehaviour
     }
 
     internal float GetDestroyAnimationTime() => destroyAnimationTime;
+    internal float GetCreateAnimationTime() => createAnimationTime;
     internal float GetFallingAnimationTime() => fallingAnimationTime;
 
 }

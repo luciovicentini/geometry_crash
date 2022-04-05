@@ -16,7 +16,6 @@ public class GameScene : MonoBehaviour
     AnimatorManager animatorManager;
     BackgroundManager backgroundManager;
     bool hasFinishDrawingBoard = false;
-    private readonly string NAME_DIVIDER = "-";
 
     void Awake()
     {
@@ -28,10 +27,7 @@ public class GameScene : MonoBehaviour
     void Start()
     {
         SetUpHolderChips();
-        boardManager.SetUpBoard(chipPerSizeAmount, chipPerSizeAmount);
-        boardManager.SetUpChips(chipPrefabs.Count);
         StartCoroutine(DrawBoard());
-        StartCoroutine(boardManager.Check3MatchesAllPositions());
     }
 
     private float GetHolderSize()
@@ -71,6 +67,7 @@ public class GameScene : MonoBehaviour
 
     private IEnumerator DrawBoard()
     {
+        boardManager.RandomizeBoard();
         hasFinishDrawingBoard = false;
         Debug.Log("DrawingBoard");
         for (int i = 0; i < boardManager.GetBoardYLength(); i++)
@@ -80,7 +77,7 @@ public class GameScene : MonoBehaviour
                 Coord position = new Coord(i, j);
                 Debug.Log($"DrawingBoard - SetupChipOn {position.ToString()}");
                 SetUpInsideChip(boardManager.GetElementOnPosition(position), position.y, position.x);
-                yield return new WaitForSeconds(0.01f);
+                yield return new WaitForSeconds(animatorManager.GetCreateAnimationTime());
             }
         }
         hasFinishDrawingBoard = true;
@@ -96,88 +93,72 @@ public class GameScene : MonoBehaviour
 
     internal void process3MLine(List<Coord> line)
     {
-
+        hasFinishDrawingBoard = false;
         if (Coord.GetLineType(line) == LineType.Horizontal)
         {
-            StartCoroutine(AnimateHorizontalFalling(line));
+            List<GameObject> chipsToAnimate = GetChipsAboveLine(line);
+            StartCoroutine(AnimateFallingChips(line, chipsToAnimate, 1));
         }
         if (Coord.GetLineType(line) == LineType.Vertical)
         {
-            StartCoroutine(AnimateVerticalFalling(line));
-            Debug.Log($"{line.ToString()} is Vertical");
+            List<GameObject> chipsToAnimate = GetChipsAboveCoord(Coord.GetUpperCoord(line));
+            StartCoroutine(AnimateFallingChips(line, chipsToAnimate, 3));
         }
-        /*  TODO: Dependiendo de si la linea es hor o vert se tienen que borrar las fichas de 
-            arriba y mostrarlas en la fila inferior desde la fila actual hasta la ultima fila.
+    }
 
-            Una vez que se termina de hacer toda la animación se tiene que continuar analizando el resto de las coordenadas.
-        */
+    private IEnumerator AnimateFallingChips(List<Coord> line, List<GameObject> chipsToAnimate, int rows)
+    {
+        AnimateDestroyingChips(line);
+        yield return new WaitForSeconds(animatorManager.GetDestroyAnimationTime());
+
+        animatorManager.AnimateFallingChips(chipsToAnimate, rows);
+        yield return new WaitForSeconds(animatorManager.GetFallingAnimationTime());
+
+        SwitchChipHolder(chipsToAnimate, rows);
+        ShowNewChips(GetLastCoords(line));
+        yield return new WaitForSeconds(animatorManager.GetCreateAnimationTime());
+        hasFinishDrawingBoard = true;
     }
 
     private void AnimateDestroyingChips(List<Coord> line)
     {
-        Debug.Log("Animating destroying Chips");
         foreach (Coord coord in line)
         {
             GameObject chip = GetChip(coord);
             animatorManager.AnimateChipHide(chip, true);
         }
-
     }
 
-    private IEnumerator AnimateHorizontalFalling(List<Coord> line)
+    private List<Coord> GetLastCoords(List<Coord> line)
     {
-        AnimateDestroyingChips(line);
-        yield return new WaitForSeconds(animatorManager.GetDestroyAnimationTime());
-
-        Debug.Log("Animating Falling Chips");
-        List<GameObject> chipsToAnimate = GetChipsAboveLine(line);
-        animatorManager.AnimateFallingChips(chipsToAnimate, 1);
-        yield return new WaitForSeconds(animatorManager.GetFallingAnimationTime());
-
-        SwitchChipHolder(chipsToAnimate, 1);
-    }
-
-    private IEnumerator AnimateVerticalFalling(List<Coord> line)
-    {
-        AnimateDestroyingChips(line);
-        yield return new WaitForSeconds(animatorManager.GetDestroyAnimationTime());
-
-        Debug.Log("Animating Falling Chips");
-        List<GameObject> chipsToAnimate = GetChipsAboveCoord(Coord.GetUpperCoord(line));
-        animatorManager.AnimateFallingChips(chipsToAnimate, 3);
-        yield return new WaitForSeconds(animatorManager.GetFallingAnimationTime());
-
-        SwitchChipHolder(chipsToAnimate, 3);
+        List<Coord> coords = new List<Coord>();
+        for (int i = 1; i < line.Count + 1; i++)
+        {
+            int delta = Coord.GetLineType(line) == LineType.Horizontal ? 1 : i;
+            coords.Add(new Coord(chipPerSizeAmount - delta, line[i - 1].x));
+        }
+        return coords;
     }
 
     private void SwitchChipHolder(List<GameObject> chips, int amount)
     {
         foreach (GameObject chip in chips)
         {
-            GameObject chipHolderOld = chip.transform.parent.gameObject;
-            string oldParentName = chipHolderOld.name;
-            Coord oldParentCoord = GetCoordFromChipHolderName(oldParentName);
+            Coord oldParentCoord = Coord.GetCoordFromChipHolderName(chip.transform.parent.gameObject.name);
             GameObject newParent = GetHolderChipFromPosition(oldParentCoord.y - amount, oldParentCoord.x);
             chip.transform.SetParent(newParent.transform);
             chip.transform.localPosition = new Vector2(0, 0);
         }
     }
 
-    private Coord GetCoordFromChipHolderName(string oldParentName)
+    private void ShowNewChips(List<Coord> coords)
     {
-        return new Coord(GetYCoordFromName(oldParentName), GetXCoordFromName(oldParentName));
-    }
-
-    private int GetYCoordFromName(string oldParentName)
-    {
-        int dividerIndex = oldParentName.IndexOf(NAME_DIVIDER);
-        return int.Parse(oldParentName.Substring(0, dividerIndex - 1));
-    }
-
-    private int GetXCoordFromName(string oldParentName)
-    {
-        int dividerIndex = oldParentName.IndexOf(NAME_DIVIDER);
-        return int.Parse(oldParentName.Substring(dividerIndex + 1));
+        foreach (Coord coord in coords)
+        {
+            GameObject holder = GetHolderChipFromPosition(coord.y, coord.x);
+            int chipIndex = boardManager.GetElementOnPosition(coord);
+            InstantiateInsideChip(holder, chipIndex, false);
+        }
     }
 
     private void RemoveChildren(GameObject holderChip)
@@ -187,18 +168,15 @@ public class GameScene : MonoBehaviour
             Destroy(holderChip.transform.GetChild(i).gameObject);
         }
     }
-
     public GameObject GetHolderChipFromPosition(int row, int column)
     {
         return GameObject.Find(GetHolderName(row, column));
     }
 
-    private GameObject GetChip(Coord coord)
-    {
-        return GetHolderChipFromPosition(coord.y, coord.x).transform.GetChild(0).gameObject;
-    }
+    private GameObject GetChip(Coord coord) => GetHolderChipFromPosition(coord.y, coord.x)
+                                                        .transform.GetChild(0).gameObject;
 
-    private string GetHolderName(int row, int column) => $"{row} {NAME_DIVIDER} {column}";
+    private string GetHolderName(int row, int column) => $"{row} {Coord.NAME_DIVIDER} {column}";
 
     private void InstantiateInsideChip(GameObject holderChip, int chipIndex, bool isSelected)
     {
@@ -243,4 +221,8 @@ public class GameScene : MonoBehaviour
         }
         return items;
     }
+
+    public int GetChipPerSizeAmount() => chipPerSizeAmount;
+
+    public int GetAmountOfChipElements() => chipPrefabs.Count;
 }
