@@ -2,11 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using CustomUtil;
+using TMPro;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
     [SerializeField] bool logBoard;
+    [SerializeField] bool showChipNumber;
 
     int[,] board;
 
@@ -61,6 +63,10 @@ public class BoardManager : MonoBehaviour
         if (logBoard)
         {
             LogBoard();
+        }
+        if (showChipNumber)
+        {
+            ShowChipNumber();
         }
     }
 
@@ -237,5 +243,15 @@ public class BoardManager : MonoBehaviour
 
         SetElementOnPosition(chip1Element, coordChip2);
         SetElementOnPosition(chip2Element, coordChip1);
+    }
+
+    private void ShowChipNumber()
+    {
+        foreach (Coord coord in GetAllCoords())
+        {
+            GameObject chip = gameScene.GetChip(coord);
+            chip.GetComponentInChildren<TextMeshPro>().text = GetElementOnPosition(coord).ToString();
+            chip.GetComponentInChildren<TextMeshPro>().gameObject.SetActive(true);
+        }
     }
 }

@@ -63,10 +63,11 @@ public class ChipSwitcher : MonoBehaviour
             if (HasA3MatchFormed(coordChip1, coordChip2))
             {
                 Debug.Log("Chips make a 3 match line");
-                matchSeeker.Init();   
+                matchSeeker.Init();
             }
             else
             {
+                boardManager.SwitchChips(coordChip2, coordChip1);
                 AnimateSwitching(coordChip2, coordChip1);
                 yield return new WaitForSeconds(animatorManager.GetSwitchAnimationTime());
                 gameScene.SwitchChips(coordChip1, coordChip2);
