@@ -10,6 +10,7 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField] float destroyAnimationTime = 0.1f;
     [SerializeField] float createAnimationTime = 0.1f;
     [SerializeField] float fallingAnimationTime = 0.1f;
+    [SerializeField] float switchAnimationTime = 0.1f;
 
     [SerializeField][Range(0f, 1f)] float holderPaddingScale = 0.9f;
 
@@ -55,8 +56,22 @@ public class AnimatorManager : MonoBehaviour
             .setEaseOutQuart();
     }
 
+    internal void AnimateSwitching(GameObject chip1, Vector2 chip1To, GameObject chip2, Vector2 chip2To)
+    {
+        AnimateChipMoving(chip1, chip1To);
+        AnimateChipMoving(chip2, chip2To);
+    }
+
+    private void AnimateChipMoving(GameObject chip, Vector2 to)
+    {
+        chip.transform
+            .LeanMoveLocal(to, switchAnimationTime)
+            .setEaseInOutQuad();
+    }
+
     internal float GetDestroyAnimationTime() => destroyAnimationTime;
     internal float GetCreateAnimationTime() => createAnimationTime;
     internal float GetFallingAnimationTime() => fallingAnimationTime;
+    internal float GetSwitchAnimationTime() => switchAnimationTime;
 
 }

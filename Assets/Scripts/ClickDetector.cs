@@ -17,7 +17,7 @@ public class ClickDetector : MonoBehaviour
         if (chip == null) return;
         
         
-        // chip.ToggleSelection();
-        // chipSwitcher.SetChipClicked(chip);
+        chip.ToggleSelection();
+        chipSwitcher.SetChipClicked(chip);
     }
 }

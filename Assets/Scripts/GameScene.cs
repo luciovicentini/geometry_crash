@@ -50,6 +50,16 @@ public class GameScene : MonoBehaviour
         }
     }
 
+    internal void SwitchChips(Coord coordChip1, Coord coordChip2)
+    {
+        GameObject parentChip1 = GetHolderChipFromPosition(coordChip1);
+        GameObject parentChip2 = GetHolderChipFromPosition(coordChip2);
+        GameObject chip1 = GetChip(coordChip1);
+        GameObject chip2 = GetChip(coordChip2);
+        SetChipParent(chip1, parentChip2);
+        SetChipParent(chip2, parentChip1);
+    }
+
     private static Vector2 CalculateChipPosition(Vector2 startingPoint, float holderSize, int i, int j)
     {
         float xPosition = startingPoint.x + (holderSize * j) + holderSize / 2;
@@ -77,7 +87,7 @@ public class GameScene : MonoBehaviour
                 Coord position = new Coord(i, j);
                 Debug.Log($"DrawingBoard - SetupChipOn {position.ToString()}");
                 SetUpInsideChip(boardManager.GetElementOnPosition(position), position.y, position.x);
-                yield return new WaitForSeconds(animatorManager.GetCreateAnimationTime());
+                yield return null/* new WaitForSeconds(animatorManager.GetCreateAnimationTime()) */;
             }
         }
         hasFinishDrawingBoard = true;
@@ -146,9 +156,14 @@ public class GameScene : MonoBehaviour
         {
             Coord oldParentCoord = Coord.GetCoordFromChipHolderName(chip.transform.parent.gameObject.name);
             GameObject newParent = GetHolderChipFromPosition(oldParentCoord.y - amount, oldParentCoord.x);
-            chip.transform.SetParent(newParent.transform);
-            chip.transform.localPosition = new Vector2(0, 0);
+            SetChipParent(chip, newParent);
         }
+    }
+
+    private void SetChipParent(GameObject chip, GameObject newParent)
+    {
+        chip.transform.SetParent(newParent.transform);
+        chip.transform.localPosition = new Vector2(0, 0);
     }
 
     private void ShowNewChips(List<Coord> coords)
@@ -168,12 +183,13 @@ public class GameScene : MonoBehaviour
             Destroy(holderChip.transform.GetChild(i).gameObject);
         }
     }
-    public GameObject GetHolderChipFromPosition(int row, int column)
-    {
-        return GameObject.Find(GetHolderName(row, column));
-    }
+    public GameObject GetHolderChipFromPosition(int row, int column) => 
+        gameObject.transform.Find(GetHolderName(row, column)).gameObject;
+    public GameObject GetHolderChipFromPosition(Coord coord) =>
+        GetHolderChipFromPosition(coord.y, coord.x);
+    
 
-    private GameObject GetChip(Coord coord) => GetHolderChipFromPosition(coord.y, coord.x)
+    internal GameObject GetChip(Coord coord) => GetHolderChipFromPosition(coord.y, coord.x)
                                                         .transform.GetChild(0).gameObject;
 
     private string GetHolderName(int row, int column) => $"{row} {Coord.NAME_DIVIDER} {column}";

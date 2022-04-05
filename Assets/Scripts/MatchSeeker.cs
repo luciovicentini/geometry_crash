@@ -7,6 +7,7 @@ public class MatchSeeker : MonoBehaviour
 {
     GameScene gameScene;
     BoardManager boardManager;
+    Match3Logic match3Logic;
 
     bool shouldCheckMatches = false;
 
@@ -14,10 +15,17 @@ public class MatchSeeker : MonoBehaviour
     {
         gameScene = FindObjectOfType<GameScene>();
         boardManager = FindObjectOfType<BoardManager>();
+        match3Logic = GetComponent<Match3Logic>();
     }
 
     void Start()
     {
+        Init();
+    }
+
+    public void Init()
+    {
+        enabled = true;
         shouldCheckMatches = true;
         StartCoroutine(Check3Matches(boardManager.GetAllCoords()));
     }
@@ -36,7 +44,7 @@ public class MatchSeeker : MonoBehaviour
             foreach (Coord coord in coords)
             {
                 Debug.Log($"Check3MatchesAllPositions - Checking coord = {coord.ToString()}");
-                List<Coord> line = Get3MatchLine(coord.Get3MLineInAllDirecctions());
+                List<Coord> line = match3Logic.Get3MatchLine(coord.Get3MLineInAllDirecctions());
                           
                 if (line != null)
                 {
@@ -48,29 +56,6 @@ public class MatchSeeker : MonoBehaviour
             if (!shouldCheckMatches) DisableScript();
             shouldCheckMatches = false;
         }
-    }
-
-    private List<Coord> Get3MatchLine(List<List<Coord>> lineList)
-    {
-        foreach (List<Coord> line in lineList)
-        {
-            if (boardManager.IsLineInsideBoard(line) && IsA3Match(line)) 
-            {
-                return line;
-            }
-        }
-        return null;
-    }
-
-    private bool IsA3Match(List<Coord> line)
-    {
-        for (int i = 0; i < line.Count - 1; i++)
-        {
-            int elem1 = boardManager.GetElementOnPosition(line[i]);
-            int elem2 = boardManager.GetElementOnPosition(line[i + 1]);
-            if (elem1 != elem2) return false;
-        }
-        return true;
     }
 
     public void DisableScript()

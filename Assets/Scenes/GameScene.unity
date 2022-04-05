@@ -911,6 +911,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1062816760}
   - component: {fileID: 1062816761}
+  - component: {fileID: 1062816762}
   m_Layer: 0
   m_Name: 3MatchSeeker
   m_TagString: Untagged
@@ -945,6 +946,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 713ce19d700f64d84b3727e962212c49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1062816762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062816759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e936b458dd4f445f58487bbc11235927, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1178560172
 GameObject:
   m_ObjectHideFlags: 0
@@ -975,9 +988,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animationChance: 0
-  destroyAnimationTime: 1
-  createAnimationTime: 0.1
-  fallingAnimationTime: 0.1
+  destroyAnimationTime: 0.05
+  createAnimationTime: 0.05
+  fallingAnimationTime: 0.05
+  switchAnimationTime: 0.05
   holderPaddingScale: 0.85
 --- !u!4 &1178560174
 Transform:
