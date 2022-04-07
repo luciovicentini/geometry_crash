@@ -268,8 +268,6 @@ GameObject:
   - component: {fileID: 3921888557525127395}
   - component: {fileID: -5172674167856920663}
   - component: {fileID: -8392218994094050847}
-  - component: {fileID: -1007245502302733478}
-  - component: {fileID: -4012188567061501189}
   m_Layer: 0
   m_Name: Oval
   m_TagString: Chip
@@ -379,35 +377,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0ce9ccc2e03246b9b839212079445e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldStartAnim: 0
---- !u!114 &-1007245502302733478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7601685037502133997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe97fa20469f44413805cbeca4324e80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startAnimation: 0
-  animationSpeed: 4
---- !u!114 &-4012188567061501189
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7601685037502133997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 659f70db08dbb4f73a01cb7fb2b37050, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startAnimation: 0
-  animationSpeed: 4
 --- !u!1 &7701551963352411989
 GameObject:
   m_ObjectHideFlags: 0

@@ -910,7 +910,7 @@ MonoBehaviour:
   fallingAnimationTime: 0.2
   switchAnimationTime: 0.2
   selectionAnimationTime: 0.2
-  holderPaddingScale: 0.85
+  holderPaddingScale: 0.8
 --- !u!4 &1178560174
 Transform:
   m_ObjectHideFlags: 0
