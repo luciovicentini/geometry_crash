@@ -21,6 +21,8 @@ public class ClickDetector : MonoBehaviour
 
     private void OnMouseDown()
     {
+        // TODO Blockear la seleccion de los chips hasta que las animaciones no terminen.
+        
         if (selectChip != null) return;
         isSelected = !isSelected;
         chipClicked = true;

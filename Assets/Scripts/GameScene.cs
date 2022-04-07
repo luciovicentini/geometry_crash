@@ -121,6 +121,7 @@ public class GameScene : MonoBehaviour
         AnimateDestroyingChips(line);
         yield return new WaitForSeconds(animatorManager.GetDestroyAnimationTime());
 
+        // TODO: Chequear que si hay chips para hacer caer porque sino se espera a una animación que nunca empezo
         animatorManager.AnimateFallingChips(chipsToAnimate, rows);
         yield return new WaitForSeconds(animatorManager.GetFallingAnimationTime());
 
