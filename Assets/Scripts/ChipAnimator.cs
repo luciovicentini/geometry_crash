@@ -5,18 +5,11 @@ using UnityEngine;
 
 public class ChipAnimator : MonoBehaviour
 {
-
-    [SerializeField] bool shouldStartAnim = false;
-
-    // Animator chipAnimator;
     AnimatorManager animationManager;
 
     private void Awake()
     {
         animationManager = FindObjectOfType<AnimatorManager>();
-
-        // chipAnimator = GetComponent<Animator>();
-
     }
 
     private void Start()
@@ -33,21 +26,4 @@ public class ChipAnimator : MonoBehaviour
     {
         animationManager.AnimateChipHide(gameObject);
     }
-
-    /* void Update()
-    {
-        if (!ShouldStartAnimation()) return;
-        StartChipAnimation();
-    }
-
-    private void StartChipAnimation()
-    {
-        chipAnimator.SetTrigger("StartAnimation");
-        shouldStartAnim = false;
-    }
-
-    private bool ShouldStartAnimation()
-    {
-        return shouldStartAnim || animationManager.ShouldStartAnimation();
-    } */
 }

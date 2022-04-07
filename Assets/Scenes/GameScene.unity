@@ -632,7 +632,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efc6615be8a1043e6b65c33bee4ad6d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  switchChipWaitTime: 0.5
+  switchChipWaitTime: 0.2
 --- !u!1 &841698761
 GameObject:
   m_ObjectHideFlags: 0
@@ -905,11 +905,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animationChance: 0
-  destroyAnimationTime: 0.1
-  createAnimationTime: 0.1
-  fallingAnimationTime: 0.1
-  switchAnimationTime: 0.1
-  selectionAnimationTime: 0.1
+  destroyAnimationTime: 0.2
+  createAnimationTime: 0.2
+  fallingAnimationTime: 0.2
+  switchAnimationTime: 0.2
+  selectionAnimationTime: 0.2
   holderPaddingScale: 0.85
 --- !u!4 &1178560174
 Transform:
