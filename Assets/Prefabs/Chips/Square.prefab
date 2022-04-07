@@ -300,8 +300,6 @@ GameObject:
   - component: {fileID: 8020472249034692332}
   - component: {fileID: -7328959506533456672}
   - component: {fileID: 1911054898278022540}
-  - component: {fileID: 5395235940743764044}
-  - component: {fileID: -9170212415987161059}
   m_Layer: 0
   m_Name: Square
   m_TagString: Chip
@@ -410,35 +408,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0ce9ccc2e03246b9b839212079445e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldStartAnim: 0
---- !u!114 &5395235940743764044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8020472249034692333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe97fa20469f44413805cbeca4324e80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startAnimation: 0
-  animationSpeed: 4
---- !u!114 &-9170212415987161059
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8020472249034692333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 659f70db08dbb4f73a01cb7fb2b37050, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startAnimation: 0
-  animationSpeed: 4
 --- !u!1 &8329749705458643701
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,8 +12,6 @@ GameObject:
   - component: {fileID: 8757506231831455956}
   - component: {fileID: 4932342195334495314}
   - component: {fileID: -664363903809544404}
-  - component: {fileID: 6703220175935957694}
-  - component: {fileID: 2704103834658119757}
   m_Layer: 0
   m_Name: Diamond
   m_TagString: Chip
@@ -123,35 +121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0ce9ccc2e03246b9b839212079445e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shouldStartAnim: 0
---- !u!114 &6703220175935957694
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3276059195864019161}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe97fa20469f44413805cbeca4324e80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startAnimation: 0
-  animationSpeed: 4
---- !u!114 &2704103834658119757
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3276059195864019161}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 659f70db08dbb4f73a01cb7fb2b37050, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startAnimation: 0
-  animationSpeed: 4
 --- !u!1 &4590470324963419291
 GameObject:
   m_ObjectHideFlags: 0
