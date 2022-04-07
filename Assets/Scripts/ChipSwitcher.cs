@@ -7,9 +7,9 @@ using UnityEngine;
 public class ChipSwitcher : MonoBehaviour
 {
     [SerializeField] float switchChipWaitTime = 0.5f;
-    ChipSelection chip1;
+    GameObject chip1;
 
-    ChipSelection chip2;
+    GameObject chip2;
 
     BoardManager boardManager;
     GameScene gameScene;
@@ -25,7 +25,7 @@ public class ChipSwitcher : MonoBehaviour
         matchSeeker = FindObjectOfType<MatchSeeker>();
     }
 
-    public void SetChipClicked(ChipSelection selectedChip)
+    public void SetChipClicked(GameObject selectedChip)
     {
         if (chip1 == null)
         {
@@ -49,10 +49,10 @@ public class ChipSwitcher : MonoBehaviour
         }
     }
 
-    private IEnumerator SwitchChips(ChipSelection selectedChip)
+    private IEnumerator SwitchChips(GameObject selectedChip)
     {
-        Coord coordChip1 = GetCoordFromChip(chip1);
-        Coord coordChip2 = GetCoordFromChip(chip2);
+        Coord coordChip1 = GetCoordFromChip(chip1.transform.parent.gameObject);
+        Coord coordChip2 = GetCoordFromChip(chip2.transform.parent.gameObject);
         if (AreContinuous(coordChip1, coordChip2))
         {
             boardManager.SwitchChips(coordChip1, coordChip2);
@@ -76,9 +76,10 @@ public class ChipSwitcher : MonoBehaviour
         }
         else
         {
-            chip1.ResetSelection();
+            chip1.transform.parent.GetComponent<ClickDetector>().ResetSelection();
             chip1 = selectedChip;
             chip2 = null;
+            yield return null;
         }
     }
 
@@ -107,10 +108,10 @@ public class ChipSwitcher : MonoBehaviour
 
     private void ForgetSelectedChips()
     {
-        chip1.ResetSelection();
+        chip1.transform.parent.GetComponent<ClickDetector>().ResetSelection();
         chip1 = null;
 
-        chip2.ResetSelection();
+        chip2.transform.parent.GetComponent<ClickDetector>().ResetSelection();
         chip2 = null;
     }
 
@@ -136,5 +137,5 @@ public class ChipSwitcher : MonoBehaviour
         }
     }
 
-    private Coord GetCoordFromChip(ChipSelection chip) => Coord.GetCoordFromChipHolderName(chip.transform.parent.gameObject.name);
+    private Coord GetCoordFromChip(GameObject holderChip) => Coord.GetCoordFromChipHolderName(holderChip.name);
 }

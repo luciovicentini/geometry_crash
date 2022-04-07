@@ -10,14 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1800025625119395515}
   - component: {fileID: 8757506231831455956}
-  - component: {fileID: 2912632614749979846}
   - component: {fileID: 4932342195334495314}
   - component: {fileID: -664363903809544404}
   - component: {fileID: 6703220175935957694}
   - component: {fileID: 2704103834658119757}
   m_Layer: 0
   m_Name: Diamond
-  m_TagString: Untagged
+  m_TagString: Chip
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -79,7 +78,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -184936143
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 3625043607559282579, guid: 19fb86013d8c24d6cb8410c0aadf30fa, type: 3}
   m_Color: {r: 1, g: 0.99149597, b: 0, a: 1}
@@ -92,19 +91,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2912632614749979846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3276059195864019161}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7dd32ffe31eb3426b805711c09f7030f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isSelected: 0
 --- !u!95 &4932342195334495314
 Animator:
   serializedVersion: 4
@@ -237,7 +223,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -184936143
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.77254903}
@@ -410,7 +396,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -184936143
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 2
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &3165881723528397749

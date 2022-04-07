@@ -11,8 +11,12 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField] float createAnimationTime = 0.1f;
     [SerializeField] float fallingAnimationTime = 0.1f;
     [SerializeField] float switchAnimationTime = 0.1f;
+    [SerializeField] float selectionAnimationTime = 0.1f;
 
     [SerializeField][Range(0f, 1f)] float holderPaddingScale = 0.9f;
+
+    static Color transparent = new Color(255f, 255f, 255f, 0f);
+    static Color opaque = new Color(255f, 255f, 255f, 1f);
 
     public bool ShouldStartAnimation() => UnityEngine.Random.Range(0, animationChance)
         == UnityEngine.Random.Range(0, 10);
@@ -69,9 +73,23 @@ public class AnimatorManager : MonoBehaviour
             .setEaseInOutQuad();
     }
 
+    public void AnimateShowSelectionSprite(GameObject sprite)
+    {
+        
+        sprite.LeanColor(opaque, selectionAnimationTime)
+            .setEaseInOutBack();
+    }
+
+    public void AnimateHideSelectionSprite(GameObject sprite)
+    {
+        sprite.LeanColor(transparent, selectionAnimationTime)
+            .setEaseInOutBack();
+    }
+
     internal float GetDestroyAnimationTime() => destroyAnimationTime;
     internal float GetCreateAnimationTime() => createAnimationTime;
     internal float GetFallingAnimationTime() => fallingAnimationTime;
     internal float GetSwitchAnimationTime() => switchAnimationTime;
+    internal float GetSelectAnimationTime() => selectionAnimationTime;
 
 }

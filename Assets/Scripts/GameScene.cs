@@ -97,13 +97,12 @@ public class GameScene : MonoBehaviour
     {
         GameObject holderChip = GetHolderChipFromPosition(row, column);
         bool wasChipSelected = GetSelection(holderChip);
-        RemoveChildren(holderChip);
+        // RemoveChildren(holderChip);
         InstantiateInsideChip(holderChip, chipIndex, wasChipSelected);
     }
 
     internal void process3MLine(List<Coord> line)
     {
-        hasFinishDrawingBoard = false;
         if (Coord.GetLineType(line) == LineType.Horizontal)
         {
             List<GameObject> chipsToAnimate = GetChipsAboveLine(line);
@@ -118,6 +117,7 @@ public class GameScene : MonoBehaviour
 
     private IEnumerator AnimateFallingChips(List<Coord> line, List<GameObject> chipsToAnimate, int rows)
     {
+        hasFinishDrawingBoard = false;
         AnimateDestroyingChips(line);
         yield return new WaitForSeconds(animatorManager.GetDestroyAnimationTime());
 
@@ -135,6 +135,8 @@ public class GameScene : MonoBehaviour
         foreach (Coord coord in line)
         {
             GameObject chip = GetChip(coord);
+            Debug.Log(coord);
+            Debug.Log(chip.transform.parent.gameObject.name);
             animatorManager.AnimateChipHide(chip, true);
         }
     }
@@ -190,19 +192,19 @@ public class GameScene : MonoBehaviour
     
 
     internal GameObject GetChip(Coord coord) => GetHolderChipFromPosition(coord.y, coord.x)
-                                                        .transform.GetChild(0).gameObject;
+                                                        .FindChildWithTag("Chip");
 
     private string GetHolderName(int row, int column) => $"{row} {Coord.NAME_DIVIDER} {column}";
 
     private void InstantiateInsideChip(GameObject holderChip, int chipIndex, bool isSelected)
     {
         GameObject insideChip = Instantiate(chipPrefabs[chipIndex], holderChip.transform.position, Quaternion.identity, holderChip.transform);
-        insideChip.GetComponent<ChipSelection>().SetSelection(isSelected);
+        // insideChip.GetComponent<ClickDetector>().SetSelection(isSelected);
     }
 
     private bool GetSelection(GameObject holderChip)
     {
-        ChipSelection cm = holderChip.GetComponentInChildren<ChipSelection>();
+        ClickDetector cm = holderChip.GetComponentInChildren<ClickDetector>();
         if (cm == null) return false;
         return cm.GetSelection();
     }

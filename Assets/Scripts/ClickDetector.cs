@@ -1,23 +1,68 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ClickDetector : MonoBehaviour
 {
-    ChipSelection chip;
+    [SerializeField] bool isSelected;
+    private bool chipClicked;
     ChipSwitcher chipSwitcher;
+    AnimatorManager animatorManager;
+    GameObject selectionSprite;
 
-    private void Awake() {
-        chipSwitcher = GetComponentInParent<ChipSwitcher>();
-    }
-
-    private void OnMouseDown() 
+    Coroutine selectChip;
+    private void Awake()
     {
-        chip = GetComponentInChildren<ChipSelection>();
-        if (chip == null) return;
-        
-        
-        chip.ToggleSelection();
-        chipSwitcher.SetChipClicked(chip);
+        chipSwitcher = GetComponentInParent<ChipSwitcher>();
+        animatorManager = FindObjectOfType<AnimatorManager>();
+        selectionSprite = gameObject.transform.Find("SelectionSprite").gameObject;
     }
+
+    private void OnMouseDown()
+    {
+        if (selectChip != null) return;
+        isSelected = !isSelected;
+        chipClicked = true;
+        StartAnimationCoroutine();
+    }
+
+    private void StartAnimationCoroutine()
+    {
+        if (selectChip != null) return;
+        selectChip = StartCoroutine(ToggleSelection());
+    }
+
+    private IEnumerator ToggleSelection()
+    {
+        StartAnimation();
+        yield return new WaitForSeconds(animatorManager.GetSelectAnimationTime());
+        if (chipClicked) chipSwitcher.SetChipClicked(gameObject.FindChildWithTag("Chip"));
+        selectChip = null;
+        chipClicked = false;
+    }
+
+    private void StartAnimation()
+    {
+        if (isSelected)
+        {
+            animatorManager.AnimateShowSelectionSprite(selectionSprite);
+        }
+        else
+        {
+            animatorManager.AnimateHideSelectionSprite(selectionSprite);
+        }
+    }
+
+    internal void ResetSelection() {
+        SetSelection(false);
+    } 
+
+    internal void SetSelection(bool isSelected)
+    {
+        this.isSelected = isSelected;
+        StartAnimationCoroutine();
+    }
+
+    internal bool GetSelection() => isSelected;
 }
