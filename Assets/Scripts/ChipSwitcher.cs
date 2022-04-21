@@ -16,6 +16,8 @@ public class ChipSwitcher : MonoBehaviour
     AnimatorManager animatorManager;
     Match3Logic match3Logic;
     MatchSeeker matchSeeker;
+
+    Coroutine isSwitchingChips;
     private void Awake()
     {
         boardManager = FindObjectOfType<BoardManager>();
@@ -24,6 +26,8 @@ public class ChipSwitcher : MonoBehaviour
         match3Logic = FindObjectOfType<Match3Logic>();
         matchSeeker = FindObjectOfType<MatchSeeker>();
     }
+
+    internal bool IsSwitchingChip() => isSwitchingChips != null;
 
     public void SetChipClicked(GameObject selectedChip)
     {
@@ -45,7 +49,7 @@ public class ChipSwitcher : MonoBehaviour
 
         if (chip1 != null && chip2 != null)
         {
-            StartCoroutine(SwitchChips(selectedChip));
+            isSwitchingChips = StartCoroutine(SwitchChips(selectedChip));
         }
     }
 
@@ -78,8 +82,8 @@ public class ChipSwitcher : MonoBehaviour
             chip1.transform.parent.GetComponent<ClickDetector>().ResetSelection();
             chip1 = selectedChip;
             chip2 = null;
-            yield return null;
         }
+        isSwitchingChips = null;
     }
 
 

@@ -9,20 +9,22 @@ public class ClickDetector : MonoBehaviour
     private bool chipClicked;
     ChipSwitcher chipSwitcher;
     AnimatorManager animatorManager;
-    GameObject selectionSprite;
+    [SerializeField] GameObject selectionSprite;
 
     Coroutine selectChip;
     private void Awake()
     {
         chipSwitcher = GetComponentInParent<ChipSwitcher>();
         animatorManager = FindObjectOfType<AnimatorManager>();
-        selectionSprite = gameObject.transform.Find("SelectionSprite").gameObject;
+    }
+
+    private void Update() {
+    
     }
 
     private void OnMouseDown()
     {
-        // TODO Blockear la seleccion de los chips hasta que las animaciones no terminen.
-        
+        if (!animatorManager.AnimationsFinished() && chipSwitcher.IsSwitchingChip()) return;
         if (selectChip != null) return;
         isSelected = !isSelected;
         chipClicked = true;

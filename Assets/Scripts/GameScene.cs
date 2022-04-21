@@ -120,7 +120,6 @@ public class GameScene : MonoBehaviour
     {
         GameObject holderChip = GetHolderChipFromPosition(row, column);
         bool wasChipSelected = GetSelection(holderChip);
-        // RemoveChildren(holderChip);
         InstantiateInsideChip(holderChip, chipIndex, wasChipSelected);
     }
 
@@ -199,13 +198,6 @@ public class GameScene : MonoBehaviour
         }
     }
 
-    private void RemoveChildren(GameObject holderChip)
-    {
-        for (int i = 0; i < holderChip.transform.childCount; i++)
-        {
-            Destroy(holderChip.transform.GetChild(i).gameObject);
-        }
-    }
     public GameObject GetHolderChipFromPosition(int row, int column) =>
         gameObject.transform.Find(GetHolderName(row, column)).gameObject;
     public GameObject GetHolderChipFromPosition(Coord coord) =>

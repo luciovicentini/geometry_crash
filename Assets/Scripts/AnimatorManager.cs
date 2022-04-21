@@ -17,15 +17,33 @@ public class AnimatorManager : MonoBehaviour
     static Color transparent = new Color(255f, 255f, 255f, 0f);
     static Color opaque = new Color(255f, 255f, 255f, 1f);
 
-    public bool ShouldStartAnimation() => UnityEngine.Random.Range(0, animationChance)
-        == UnityEngine.Random.Range(0, 10);
+    private enum AnimationManagerState
+    {
+        Running,
+        Idle,
+    }
+
+    private AnimationManagerState state;
 
     public void AnimateChipHide(GameObject chip, bool destroyIt = false)
     {
         chip.transform
             .LeanScale(Vector2.zero, destroyAnimationTime)
             .setEaseOutQuad()
+            .setOnStart(AnimationStateRunning)
+            .setOnComplete(AnimationStateIdling)
             .setDestroyOnComplete(destroyIt);
+    }
+
+    private void AnimationStateRunning()
+    {
+        state = AnimationManagerState.Running;
+    }
+
+
+    private void AnimationStateIdling()
+    {
+        state = AnimationManagerState.Idle;
     }
 
     public void AnimateChipShow(GameObject chip)
@@ -34,7 +52,9 @@ public class AnimatorManager : MonoBehaviour
         chip.transform.localScale = Vector2.zero;
         chip.transform
             .LeanScale(finalScale, createAnimationTime)
-            .setEaseOutQuad();
+            .setEaseOutQuad()
+            .setOnStart(AnimationStateRunning)
+            .setOnComplete(AnimationStateIdling);
     }
 
     private Vector3 GetScale(GameObject chip)
@@ -54,7 +74,9 @@ public class AnimatorManager : MonoBehaviour
     {
         chip.transform
             .LeanMoveLocalY(amount * -1, fallingAnimationTime)
-            .setEaseOutQuart();
+            .setEaseOutQuart()
+            .setOnStart(AnimationStateRunning)
+            .setOnComplete(AnimationStateIdling);
     }
 
     internal void AnimateSwitching(GameObject chip1, Vector2 chip1To, GameObject chip2, Vector2 chip2To)
@@ -67,19 +89,25 @@ public class AnimatorManager : MonoBehaviour
     {
         chip.transform
             .LeanMoveLocal(to, switchAnimationTime)
-            .setEaseInOutQuad();
+            .setEaseInOutQuad()
+            .setOnStart(AnimationStateRunning)
+            .setOnComplete(AnimationStateIdling);
     }
 
     public void AnimateShowSelectionSprite(GameObject sprite)
     {
-        
+
         sprite.LeanColor(opaque, selectionAnimationTime)
+            .setOnStart(AnimationStateRunning)
+            .setOnComplete(AnimationStateIdling)
             .setEaseInOutBack();
     }
 
     public void AnimateHideSelectionSprite(GameObject sprite)
     {
         sprite.LeanColor(transparent, selectionAnimationTime)
+            .setOnStart(AnimationStateRunning)
+            .setOnComplete(AnimationStateIdling)
             .setEaseInOutBack();
     }
 
@@ -88,5 +116,10 @@ public class AnimatorManager : MonoBehaviour
     internal float GetFallingAnimationTime() => fallingAnimationTime;
     internal float GetSwitchAnimationTime() => switchAnimationTime;
     internal float GetSelectAnimationTime() => selectionAnimationTime;
+
+    internal bool AnimationsFinished()
+    {
+        return state == AnimationManagerState.Idle;
+    }
 
 }
