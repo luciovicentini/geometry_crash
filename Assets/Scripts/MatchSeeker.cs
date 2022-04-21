@@ -40,11 +40,9 @@ public class MatchSeeker : MonoBehaviour
         while (true)
         {
             yield return new WaitUntil(() => gameScene.HasFinishDrawingBoard());
-            Debug.Log($"Check3MatchesAllPositions");
             foreach (Coord coord in coords)
             {
-                Debug.Log($"Check3MatchesAllPositions - Checking coord = {coord.ToString()}");
-                List<Coord> line = match3Logic.Get3MatchLine(coord.Get3MLineInAllDirecctions());
+                List<Coord> line = match3Logic.GetMatchLine(coord.Get3MLineInAllDirecctions());
                           
                 if (line != null)
                 {

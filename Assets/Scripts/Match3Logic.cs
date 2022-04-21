@@ -14,10 +14,10 @@ public class Match3Logic : MonoBehaviour
     
     internal bool IsCoordPartOf3MatchLine(Coord coord)
     {
-        return Get3MatchLine(coord.Get3MLineInAllDirecctions()) != null;
+        return GetMatchLine(coord.Get3MLineInAllDirecctions()) != null;
     }
 
-    internal List<Coord> Get3MatchLine(List<List<Coord>> lineList)
+    internal List<Coord> GetMatchLine(List<List<Coord>> lineList)
     {
         foreach (List<Coord> line in lineList)
         {

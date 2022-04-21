@@ -62,7 +62,6 @@ public class ChipSwitcher : MonoBehaviour
             yield return new WaitForSeconds(switchChipWaitTime);
             if (HasA3MatchFormed(coordChip1, coordChip2))
             {
-                Debug.Log("Chips make a 3 match line");
                 matchSeeker.Init();
             }
             else

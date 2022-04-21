@@ -12,7 +12,7 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField] float switchAnimationTime = 0.1f;
     [SerializeField] float selectionAnimationTime = 0.1f;
 
-    [SerializeField][Range(0f, 1f)] float holderPaddingScale = 0.9f;
+    [SerializeField][Range(0f, 1f)] float holderPadding = 0.9f;
 
     static Color transparent = new Color(255f, 255f, 255f, 0f);
     static Color opaque = new Color(255f, 255f, 255f, 1f);
@@ -22,7 +22,6 @@ public class AnimatorManager : MonoBehaviour
 
     public void AnimateChipHide(GameObject chip, bool destroyIt = false)
     {
-        Debug.Log($"AnimateChipHide {chip}");
         chip.transform
             .LeanScale(Vector2.zero, destroyAnimationTime)
             .setEaseOutQuad()
@@ -40,12 +39,11 @@ public class AnimatorManager : MonoBehaviour
 
     private Vector3 GetScale(GameObject chip)
     {
-        return chip.transform.localScale * holderPaddingScale;
+        return chip.transform.localScale * holderPadding;
     }
 
     internal void AnimateFallingChips(List<GameObject> chips, int amountSteps)
     {
-        Debug.Log("Animating Horizontal Falling");
         foreach (GameObject chip in chips)
         {
             AnimateFallingChip(chip, amountSteps);
@@ -55,7 +53,7 @@ public class AnimatorManager : MonoBehaviour
     private void AnimateFallingChip(GameObject chip, float amount)
     {
         chip.transform
-            .LeanMoveLocalY(amount, fallingAnimationTime)
+            .LeanMoveLocalY(amount * -1, fallingAnimationTime)
             .setEaseOutQuart();
     }
 

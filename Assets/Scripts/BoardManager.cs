@@ -77,7 +77,7 @@ public class BoardManager : MonoBehaviour
     public void Proccess3Match(List<Coord> line)
     {
         scoreKeeper.ScoreLine();
-        LogListCoords(line);
+        // LogListCoords(line);
         if (Coord.GetLineType(line) == LineType.Horizontal)
         {
             ProcessHorLine(line);
@@ -217,11 +217,6 @@ public class BoardManager : MonoBehaviour
     }
 
     private int GetAmountOfRowToTop(Coord coord) => GetBoardYLength() - 1 - coord.y;
-
-    private void LogListCoords(List<Coord> coords)
-    {
-        Debug.Log($"Chips [{Coord.ListDebugging(coords)}] are equals");
-    }
 
     private void RemoveChips(List<Coord> coords)
     {

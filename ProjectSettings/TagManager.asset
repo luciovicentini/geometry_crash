@@ -45,9 +45,9 @@ TagManager:
   - name: Background
     uniqueID: 4143916037
     locked: 0
-  - name: Selection
-    uniqueID: 428787297
-    locked: 0
   - name: Chips
     uniqueID: 4110031153
+    locked: 0
+  - name: Selection
+    uniqueID: 428787297
     locked: 0

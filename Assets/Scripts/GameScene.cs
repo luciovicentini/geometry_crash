@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class GameScene : MonoBehaviour
 {
-    [SerializeField] GameObject boardBackground;
     [SerializeField] int chipPerSizeAmount = 10;
-    [SerializeField] GameObject holderChipPrefab;
+    [SerializeField] GameObject holderChipBackground1;
+    [SerializeField] GameObject holderChipBackground2;
     [SerializeField] List<GameObject> chipPrefabs;
 
     BoardManager boardManager;
@@ -44,8 +44,34 @@ public class GameScene : MonoBehaviour
             for (int column = 0; column < chipPerSizeAmount; column++)
             {
                 Vector2 position = CalculateChipPosition(startingPoint, holderSize, row, column);
-                GameObject holderChip = InstantiateChipHolder(position);
+                GameObject holderChip = InstantiateChipHolder(GetChipHolderGO(row, column), position, holderSize);
                 holderChip.name = GetHolderName(row, column);
+            }
+        }
+    }
+
+    private GameObject GetChipHolderGO(int row, int column)
+    {
+        if (row % 2 == 0)
+        {
+            if (column % 2 == 0)
+            {
+                return holderChipBackground1;
+            }
+            else
+            {
+                return holderChipBackground2;
+            }
+        }
+        else
+        {
+            if (column % 2 == 0)
+            {
+                return holderChipBackground2;
+            }
+            else
+            {
+                return holderChipBackground1;
             }
         }
     }
@@ -64,14 +90,13 @@ public class GameScene : MonoBehaviour
     {
         float xPosition = startingPoint.x + (holderSize * j) + holderSize / 2;
         float yPosition = startingPoint.y + (holderSize * i) + holderSize / 2;
-        Vector2 position = new Vector2(xPosition, yPosition);
-        return position;
+        return new Vector2(xPosition, yPosition);
     }
 
-    private GameObject InstantiateChipHolder(Vector2 position)
+    private GameObject InstantiateChipHolder(GameObject chipHolder, Vector2 position, float chipHolderSize)
     {
-        GameObject holderChip = Instantiate(holderChipPrefab, position, Quaternion.identity, gameObject.transform);
-        holderChip.transform.localScale = new Vector2(GetHolderSize(), GetHolderSize());
+        GameObject holderChip = Instantiate(chipHolder, position, Quaternion.identity, gameObject.transform);
+        holderChip.transform.localScale = new Vector2(chipHolderSize, chipHolderSize);
         return holderChip;
     }
 
@@ -79,15 +104,13 @@ public class GameScene : MonoBehaviour
     {
         boardManager.RandomizeBoard();
         hasFinishDrawingBoard = false;
-        Debug.Log("DrawingBoard");
         for (int i = 0; i < boardManager.GetBoardYLength(); i++)
         {
             for (int j = 0; j < boardManager.GetBoardXLength(); j++)
             {
                 Coord position = new Coord(i, j);
-                Debug.Log($"DrawingBoard - SetupChipOn {position.ToString()}");
                 SetUpInsideChip(boardManager.GetElementOnPosition(position), position.y, position.x);
-                yield return null/* new WaitForSeconds(animatorManager.GetCreateAnimationTime()) */;
+                yield return null;
             }
         }
         hasFinishDrawingBoard = true;
@@ -121,7 +144,6 @@ public class GameScene : MonoBehaviour
         AnimateDestroyingChips(line);
         yield return new WaitForSeconds(animatorManager.GetDestroyAnimationTime());
 
-        // TODO: Chequear que si hay chips para hacer caer porque sino se espera a una animación que nunca empezo
         animatorManager.AnimateFallingChips(chipsToAnimate, rows);
         yield return new WaitForSeconds(animatorManager.GetFallingAnimationTime());
 
@@ -136,8 +158,6 @@ public class GameScene : MonoBehaviour
         foreach (Coord coord in line)
         {
             GameObject chip = GetChip(coord);
-            Debug.Log(coord);
-            Debug.Log(chip.transform.parent.gameObject.name);
             animatorManager.AnimateChipHide(chip, true);
         }
     }
@@ -186,11 +206,11 @@ public class GameScene : MonoBehaviour
             Destroy(holderChip.transform.GetChild(i).gameObject);
         }
     }
-    public GameObject GetHolderChipFromPosition(int row, int column) => 
+    public GameObject GetHolderChipFromPosition(int row, int column) =>
         gameObject.transform.Find(GetHolderName(row, column)).gameObject;
     public GameObject GetHolderChipFromPosition(Coord coord) =>
         GetHolderChipFromPosition(coord.y, coord.x);
-    
+
 
     internal GameObject GetChip(Coord coord) => GetHolderChipFromPosition(coord.y, coord.x)
                                                         .FindChildWithTag("Chip");
