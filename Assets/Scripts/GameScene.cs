@@ -15,6 +15,7 @@ public class GameScene : MonoBehaviour
 
     AnimatorManager animatorManager;
     BackgroundManager backgroundManager;
+    ParticleManager particleManager;
     bool hasFinishDrawingBoard = false;
 
     void Awake()
@@ -22,6 +23,7 @@ public class GameScene : MonoBehaviour
         boardManager = FindObjectOfType<BoardManager>();
         animatorManager = FindObjectOfType<AnimatorManager>();
         backgroundManager = FindObjectOfType<BackgroundManager>();
+        particleManager = FindObjectOfType<ParticleManager>();
     }
 
     void Start()
@@ -157,7 +159,8 @@ public class GameScene : MonoBehaviour
         foreach (Coord coord in line)
         {
             GameObject chip = GetChip(coord);
-            animatorManager.AnimateChipHide(chip, true);
+            particleManager.GenerateFromGameObject(chip);
+            chip.GetComponent<ChipAnimator>().HideChip(true);
         }
     }
 

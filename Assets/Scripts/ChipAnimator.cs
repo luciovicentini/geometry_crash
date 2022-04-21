@@ -22,8 +22,8 @@ public class ChipAnimator : MonoBehaviour
         animationManager.AnimateChipShow(gameObject);
     }
 
-    public void HideChip()
+    public void HideChip(bool shouldDestroy)
     {
-        animationManager.AnimateChipHide(gameObject);
+        animationManager.AnimateChipHide(gameObject, shouldDestroy);
     }
 }
