@@ -11,8 +11,7 @@ public static class SoundManager
     public enum Sound
     {
         ChipSelected,
-        ChipSwitching01,
-        ChipSwitching02,
+        ChipSwitching,
         ChipSwitchingBack,
         ChipDestroying,
         ChipCreating,
@@ -84,7 +83,7 @@ public static class SoundManager
         {
             if (soundAudioClip.sound == sound)
             {
-                return soundAudioClip.audioClip;
+                return soundAudioClip.audioClips[Random.Range(0, soundAudioClip.audioClips.Length)];
             }
         }
         Debug.LogError("Sound " + sound + " not found!");

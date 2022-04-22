@@ -63,7 +63,7 @@ public class ChipSwitcher : MonoBehaviour
             AnimateSwitching(coordChip1, coordChip2);
             yield return new WaitForSeconds(animatorManager.GetSwitchAnimationTime());
             
-            SoundManager.PlaySound(SoundManager.Sound.ChipSwitching01, chip1.transform.position);
+            SoundManager.PlaySound(SoundManager.Sound.ChipSwitching, chip1.transform.position);
             gameScene.SwitchChips(coordChip1, coordChip2);
             yield return new WaitForSeconds(switchChipWaitTime);
             if (HasA3MatchFormed(coordChip1, coordChip2))
