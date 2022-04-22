@@ -77,7 +77,6 @@ public class BoardManager : MonoBehaviour
     public void Proccess3Match(List<Coord> line)
     {
         scoreKeeper.ScoreLine();
-        // LogListCoords(line);
         if (Coord.GetLineType(line) == LineType.Horizontal)
         {
             ProcessHorLine(line);

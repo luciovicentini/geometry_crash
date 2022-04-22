@@ -6,11 +6,12 @@ using UnityEngine;
 public class ClickDetector : MonoBehaviour
 {
     [SerializeField] bool isSelected;
+    [SerializeField] GameObject selectionSprite;
     private bool chipClicked;
     ChipSwitcher chipSwitcher;
     AnimatorManager animatorManager;
-    [SerializeField] GameObject selectionSprite;
 
+    GameObject chip;
     Coroutine selectChip;
     private void Awake()
     {
@@ -28,7 +29,9 @@ public class ClickDetector : MonoBehaviour
         if (selectChip != null) return;
         isSelected = !isSelected;
         chipClicked = true;
+        chip = gameObject.FindChildWithTag("Chip");
         StartAnimationCoroutine();
+        SoundManager.PlaySound(SoundManager.Sound.ChipSelected, chip.transform.position);
     }
 
     private void StartAnimationCoroutine()
@@ -41,7 +44,7 @@ public class ClickDetector : MonoBehaviour
     {
         StartAnimation();
         yield return new WaitForSeconds(animatorManager.GetSelectAnimationTime());
-        if (chipClicked) chipSwitcher.SetChipClicked(gameObject.FindChildWithTag("Chip"));
+        if (chipClicked) chipSwitcher.SetChipClicked(chip);
         selectChip = null;
         chipClicked = false;
     }

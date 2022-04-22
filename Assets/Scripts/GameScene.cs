@@ -145,6 +145,8 @@ public class GameScene : MonoBehaviour
         AnimateDestroyingChips(line);
         yield return new WaitForSeconds(animatorManager.GetDestroyAnimationTime());
 
+        Vector2 soundPosition = chipsToAnimate.Count > 0 ? chipsToAnimate[0].transform.position : Vector2.zero;
+        SoundManager.PlaySound(SoundManager.Sound.ChipFalling, soundPosition);
         animatorManager.AnimateFallingChips(chipsToAnimate, rows);
         yield return new WaitForSeconds(animatorManager.GetFallingAnimationTime());
 

@@ -27,6 +27,7 @@ public class AnimatorManager : MonoBehaviour
 
     public void AnimateChipHide(GameObject chip, bool destroyIt = false)
     {
+        SoundManager.PlaySound(SoundManager.Sound.ChipDestroying, chip.transform.position);
         chip.transform
             .LeanScale(Vector2.zero, destroyAnimationTime)
             .setEaseOutQuad()
@@ -48,6 +49,7 @@ public class AnimatorManager : MonoBehaviour
 
     public void AnimateChipShow(GameObject chip)
     {
+        SoundManager.PlaySound(SoundManager.Sound.ChipCreating, chip.transform.position);
         Vector2 finalScale = GetScale(chip);
         chip.transform.localScale = Vector2.zero;
         chip.transform

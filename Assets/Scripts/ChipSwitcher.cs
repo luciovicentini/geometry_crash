@@ -49,11 +49,11 @@ public class ChipSwitcher : MonoBehaviour
 
         if (chip1 != null && chip2 != null)
         {
-            isSwitchingChips = StartCoroutine(SwitchChips(selectedChip));
+            isSwitchingChips = StartCoroutine(SwitchChips());
         }
     }
 
-    private IEnumerator SwitchChips(GameObject selectedChip)
+    private IEnumerator SwitchChips()
     {
         Coord coordChip1 = GetCoordFromChip(chip1.transform.parent.gameObject);
         Coord coordChip2 = GetCoordFromChip(chip2.transform.parent.gameObject);
@@ -62,6 +62,8 @@ public class ChipSwitcher : MonoBehaviour
             boardManager.SwitchChips(coordChip1, coordChip2);
             AnimateSwitching(coordChip1, coordChip2);
             yield return new WaitForSeconds(animatorManager.GetSwitchAnimationTime());
+            
+            SoundManager.PlaySound(SoundManager.Sound.ChipSwitching01, chip1.transform.position);
             gameScene.SwitchChips(coordChip1, coordChip2);
             yield return new WaitForSeconds(switchChipWaitTime);
             if (HasA3MatchFormed(coordChip1, coordChip2))
@@ -74,13 +76,14 @@ public class ChipSwitcher : MonoBehaviour
                 AnimateSwitching(coordChip2, coordChip1);
                 yield return new WaitForSeconds(animatorManager.GetSwitchAnimationTime());
                 gameScene.SwitchChips(coordChip1, coordChip2);
+                SoundManager.PlaySound(SoundManager.Sound.ChipSwitchingBack, chip1.transform.position);
             }
             ForgetSelectedChips();
         }
         else
         {
             chip1.transform.parent.GetComponent<ClickDetector>().ResetSelection();
-            chip1 = selectedChip;
+            chip1 = chip2;
             chip2 = null;
         }
         isSwitchingChips = null;
