@@ -12,32 +12,29 @@ public class ClickDetector : MonoBehaviour
     AnimatorManager animatorManager;
 
     GameObject chip;
-    Coroutine selectChip;
+    Coroutine selectChipAnimationCR;
+
     private void Awake()
     {
         chipSwitcher = GetComponentInParent<ChipSwitcher>();
         animatorManager = FindObjectOfType<AnimatorManager>();
     }
 
-    private void Update() {
-    
-    }
-
-    private void OnMouseDown()
+    /* private void OnMouseDown()
     {
         if (!animatorManager.AnimationsFinished() && chipSwitcher.IsSwitchingChip()) return;
-        if (selectChip != null) return;
+        if (selectChipAnimationCR != null) return;
         isSelected = !isSelected;
         chipClicked = true;
         chip = gameObject.FindChildWithTag("Chip");
         StartAnimationCoroutine();
         SoundManager.PlaySound(SoundManager.Sound.ChipSelected, chip.transform.position);
-    }
+    } */
 
     private void StartAnimationCoroutine()
     {
-        if (selectChip != null) return;
-        selectChip = StartCoroutine(ToggleSelection());
+        if (selectChipAnimationCR != null) return;
+        selectChipAnimationCR = StartCoroutine(ToggleSelection());
     }
 
     private IEnumerator ToggleSelection()
@@ -45,7 +42,7 @@ public class ClickDetector : MonoBehaviour
         StartAnimation();
         yield return new WaitForSeconds(animatorManager.GetSelectAnimationTime());
         if (chipClicked) chipSwitcher.SetChipClicked(chip);
-        selectChip = null;
+        selectChipAnimationCR = null;
         chipClicked = false;
     }
 
@@ -61,9 +58,10 @@ public class ClickDetector : MonoBehaviour
         }
     }
 
-    internal void ResetSelection() {
+    internal void ResetSelection()
+    {
         SetSelection(false);
-    } 
+    }
 
     internal void SetSelection(bool isSelected)
     {
