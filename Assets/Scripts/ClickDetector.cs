@@ -18,18 +18,22 @@ public class ClickDetector : MonoBehaviour
     {
         chipSwitcher = GetComponentInParent<ChipSwitcher>();
         animatorManager = FindObjectOfType<AnimatorManager>();
+        ObjectDetector.OnChipClicked += OnClicked;
     }
 
-    /* private void OnMouseDown()
+    private void OnClicked(String chipName)
     {
-        if (!animatorManager.AnimationsFinished() && chipSwitcher.IsSwitchingChip()) return;
-        if (selectChipAnimationCR != null) return;
-        isSelected = !isSelected;
-        chipClicked = true;
-        chip = gameObject.FindChildWithTag("Chip");
-        StartAnimationCoroutine();
-        SoundManager.PlaySound(SoundManager.Sound.ChipSelected, chip.transform.position);
-    } */
+        if (chipName == this.gameObject.name)
+        {
+            if (!animatorManager.AnimationsFinished() && chipSwitcher.IsSwitchingChip()) return;
+            if (selectChipAnimationCR != null) return;
+            isSelected = !isSelected;
+            chipClicked = true;
+            chip = gameObject.FindChildWithTag("Chip");
+            StartAnimationCoroutine();
+            SoundManager.PlaySound(SoundManager.Sound.ChipSelected, chip.transform.position);
+        }
+    }
 
     private void StartAnimationCoroutine()
     {

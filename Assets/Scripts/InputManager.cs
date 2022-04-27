@@ -75,6 +75,6 @@ public struct TouchData
 
     public override string ToString()
     {
-        return $"(Position:{this.Position.x}-{Position.y}, Time: {this.Time})";
+        return $"(Position: (x:{this.Position.x},y:{Position.y}), Time: {this.Time})";
     }
 }

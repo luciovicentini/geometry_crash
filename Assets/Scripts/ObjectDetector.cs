@@ -9,6 +9,8 @@ public class ObjectDetector : MonoBehaviour
     private InputManager inputManager;
     private TouchData touchData;
 
+    public static event Action<String> OnChipClicked = delegate { };
+
     private void Awake()
     {
         mainCamera = Camera.main;
@@ -27,7 +29,6 @@ public class ObjectDetector : MonoBehaviour
 
     private void StartTouch(TouchData touchData)
     {
-        Debug.Log($"TouchData - {touchData.ToString()}");
         this.touchData = touchData;
         DetectObject();
     }
@@ -39,7 +40,7 @@ public class ObjectDetector : MonoBehaviour
         RaycastHit2D hits2D = Physics2D.GetRayIntersection(ray);
         if (hits2D.collider != null)
         {
-            Debug.Log($"Hit 2D Collider {hits2D.collider.gameObject.name}");
+            OnChipClicked(hits2D.collider.gameObject.name);
         }
     }
 }
