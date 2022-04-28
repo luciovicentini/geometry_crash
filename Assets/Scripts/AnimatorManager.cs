@@ -36,17 +36,6 @@ public class AnimatorManager : MonoBehaviour
             .setDestroyOnComplete(destroyIt);
     }
 
-    private void AnimationStateRunning()
-    {
-        state = AnimationManagerState.Running;
-    }
-
-
-    private void AnimationStateIdling()
-    {
-        state = AnimationManagerState.Idle;
-    }
-
     public void AnimateChipShow(GameObject chip)
     {
         SoundManager.PlaySound(SoundManager.Sound.ChipCreating, chip.transform.position);
@@ -118,6 +107,17 @@ public class AnimatorManager : MonoBehaviour
     internal float GetFallingAnimationTime() => fallingAnimationTime;
     internal float GetSwitchAnimationTime() => switchAnimationTime;
     internal float GetSelectAnimationTime() => selectionAnimationTime;
+
+    private void AnimationStateRunning()
+    {
+        state = AnimationManagerState.Running;
+    }
+
+
+    private void AnimationStateIdling()
+    {
+        state = AnimationManagerState.Idle;
+    }
 
     internal bool AnimationsFinished()
     {

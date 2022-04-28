@@ -5,9 +5,9 @@ using UnityEngine;
 public static class SoundManager
 {
     private static Dictionary<Sound, float> soundTimerDictionary = new Dictionary<Sound, float>();
-
     private static GameObject oneShotGameObject;
     private static AudioSource oneShotAudioSource;
+    
     public enum Sound
     {
         ChipSelected,

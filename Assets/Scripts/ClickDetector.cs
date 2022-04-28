@@ -7,6 +7,7 @@ public class ClickDetector : MonoBehaviour
 {
     [SerializeField] bool isSelected;
     [SerializeField] GameObject selectionSprite;
+    
     private bool chipClicked;
     ChipSwitcher chipSwitcher;
     AnimatorManager animatorManager;
@@ -18,14 +19,21 @@ public class ClickDetector : MonoBehaviour
     {
         chipSwitcher = GetComponentInParent<ChipSwitcher>();
         animatorManager = FindObjectOfType<AnimatorManager>();
+    }
+
+    private void OnEnable() {
         ObjectDetector.OnChipClicked += OnClicked;
+    }
+
+    private void OnDisable() {
+        ObjectDetector.OnChipClicked -= OnClicked;
     }
 
     private void OnClicked(String chipName)
     {
         if (chipName == this.gameObject.name)
         {
-            if (!animatorManager.AnimationsFinished() && chipSwitcher.IsSwitchingChip()) return;
+            if (!animatorManager.AnimationsFinished() || chipSwitcher.IsSwitchingChip()) return;
             if (selectChipAnimationCR != null) return;
             isSelected = !isSelected;
             chipClicked = true;

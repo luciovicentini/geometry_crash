@@ -18,6 +18,7 @@ public class ChipSwitcher : MonoBehaviour
     MatchSeeker matchSeeker;
 
     Coroutine isSwitchingChips;
+
     private void Awake()
     {
         boardManager = FindObjectOfType<BoardManager>();
@@ -62,8 +63,8 @@ public class ChipSwitcher : MonoBehaviour
             boardManager.SwitchChips(coordChip1, coordChip2);
             AnimateSwitching(coordChip1, coordChip2);
             yield return new WaitForSeconds(animatorManager.GetSwitchAnimationTime());
-            
-            SoundManager.PlaySound(SoundManager.Sound.ChipSwitching, chip1.transform.position);
+
+            SoundManager.PlaySound(SoundManager.Sound.ChipSwitching);
             gameScene.SwitchChips(coordChip1, coordChip2);
             yield return new WaitForSeconds(switchChipWaitTime);
             if (HasA3MatchFormed(coordChip1, coordChip2))
@@ -76,7 +77,7 @@ public class ChipSwitcher : MonoBehaviour
                 AnimateSwitching(coordChip2, coordChip1);
                 yield return new WaitForSeconds(animatorManager.GetSwitchAnimationTime());
                 gameScene.SwitchChips(coordChip1, coordChip2);
-                SoundManager.PlaySound(SoundManager.Sound.ChipSwitchingBack, chip1.transform.position);
+                SoundManager.PlaySound(SoundManager.Sound.ChipSwitchingBack);
             }
             ForgetSelectedChips();
         }
@@ -114,17 +115,21 @@ public class ChipSwitcher : MonoBehaviour
 
     private void ForgetSelectedChips()
     {
-        chip1.transform.parent.GetComponent<ClickDetector>().ResetSelection();
-        chip1 = null;
+        if (chip1 != null)
+        {
+            chip1.transform.parent.GetComponent<ClickDetector>()?.ResetSelection();
+            chip1 = null;
+        }
 
-        chip2.transform.parent.GetComponent<ClickDetector>().ResetSelection();
-        chip2 = null;
+        if (chip2 != null)
+        {
+            chip2.transform.parent.GetComponent<ClickDetector>()?.ResetSelection();
+            chip2 = null;
+        }
     }
 
     private void AnimateSwitching(Coord chip1Coord, Coord chip2Coord)
     {
-        GameObject chip1 = gameScene.GetChip(chip1Coord);
-        GameObject chip2 = gameScene.GetChip(chip2Coord);
         if (chip1Coord.x > chip2Coord.x)
         {
             animatorManager.AnimateSwitching(chip1, Vector2.left, chip2, Vector2.right);
