@@ -54,6 +54,16 @@ public class ChipSwitcher : MonoBehaviour
         }
     }
 
+    public void HandleSwiping(SwipeDirection direction)
+    {
+        if (chip1 == null || chip2 != null) return;
+        if (isSwitchingChips != null) return;
+        Coord chip1Coord = GetCoordFromChip(chip1.transform.parent.gameObject);
+        Coord chip2Coord = chip1Coord.GetCoordBySwipeDirection(direction);
+        chip2 = gameScene.GetChip(chip2Coord);
+        isSwitchingChips = StartCoroutine(SwitchChips());
+    }
+
     private IEnumerator SwitchChips()
     {
         Coord coordChip1 = GetCoordFromChip(chip1.transform.parent.gameObject);

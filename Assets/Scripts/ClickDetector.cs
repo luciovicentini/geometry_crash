@@ -7,7 +7,7 @@ public class ClickDetector : MonoBehaviour
 {
     [SerializeField] bool isSelected;
     [SerializeField] GameObject selectionSprite;
-    
+
     private bool chipClicked;
     ChipSwitcher chipSwitcher;
     AnimatorManager animatorManager;
@@ -21,11 +21,13 @@ public class ClickDetector : MonoBehaviour
         animatorManager = FindObjectOfType<AnimatorManager>();
     }
 
-    private void OnEnable() {
+    private void OnEnable()
+    {
         ObjectDetector.OnChipClicked += OnClicked;
     }
 
-    private void OnDisable() {
+    private void OnDisable()
+    {
         ObjectDetector.OnChipClicked -= OnClicked;
     }
 

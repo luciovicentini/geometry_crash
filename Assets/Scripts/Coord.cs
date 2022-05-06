@@ -75,6 +75,27 @@ namespace CustomUtil
             return listLine;
         }
 
+        public Coord GetCoordBySwipeDirection(SwipeDirection direction)
+        {
+            switch (direction)
+            {
+                case SwipeDirection.Up:
+                    return this.GetUpCoord();
+                case SwipeDirection.Down:
+                    return this.GetDownCoord();
+                case SwipeDirection.Left:
+                    return this.GetLeftCoord();
+                case SwipeDirection.Right:
+                    return this.GetRightCoord();
+            }
+            throw new ArgumentException();
+        }
+
+        private Coord GetLeftCoord() => new Coord(this.y, this.x - 1);
+        private Coord GetRightCoord() => new Coord(this.y, this.x + 1);
+        private Coord GetUpCoord() => new Coord(this.y + 1, this.x);
+        private Coord GetDownCoord() => new Coord(this.y - 1, this.x);
+
         private List<Coord> GetLineRight() => CreateLine(3, LineType.Horizontal);
 
         private List<Coord> GetLineLeft() => AddX(-2).CreateLine(3, LineType.Horizontal);
@@ -186,7 +207,7 @@ namespace CustomUtil
         {
             return new Coord(GetYCoordFromName(oldParentName), GetXCoordFromName(oldParentName));
         }
-        
+
         private static int GetYCoordFromName(string oldParentName)
         {
             int dividerIndex = oldParentName.IndexOf(NAME_DIVIDER);

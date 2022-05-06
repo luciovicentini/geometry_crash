@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class AnimatorManager : MonoBehaviour
 {
-    [SerializeField][Range(0, 9999)] int animationChance = 1000;
     [SerializeField] float destroyAnimationTime = 0.1f;
     [SerializeField] float createAnimationTime = 0.1f;
     [SerializeField] float fallingAnimationTime = 0.1f;

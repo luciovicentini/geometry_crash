@@ -58,17 +58,17 @@ public class BackgroundManager : MonoBehaviour
             gameObject.transform.localScale.y / 2 * -1 + GetYBoardPosition());
     }
 
-    bool IsWidthSmallerScreenSize()
+    private bool IsWidthSmallerScreenSize()
     {
         return GetWidthScreenSize() < GetHeightScreenSize();
     }
 
-    float GetWidthScreenSize()
+    private float GetWidthScreenSize()
     {
         return GetScreenSizeVector().x * 2;
     }
 
-    float GetHeightScreenSize()
+    private float GetHeightScreenSize()
     {
         return GetScreenSizeVector().y * 2;
     }
