@@ -9,70 +9,47 @@ public class SwipeDetector : MonoBehaviour
     [SerializeField] private float maximumTime = 1f;
     [SerializeField, Range(0f, 1f)] private float directionThreshold = .9f;
 
-    private InputManager inputManager;
-    private TouchData startTouchData;
-    private TouchData endTouchData;
-
+       
     public static event Action<SwipeData> OnSwipe = delegate { };
 
-    private void Awake()
+
+    public bool IsSwiping(TouchData startTouch, TouchData endTouch) => (Vector3.Distance(startTouch.Position, endTouch.Position) >= minimumDistance &&
+            (endTouch.Time - startTouch.Time) <= maximumTime);
+
+
+    public void DetectSwipe(TouchData startTouch, TouchData endTouch)
     {
-        inputManager = InputManager.Instance;
-    }
-
-    private void OnEnable()
-    {
-        inputManager.OnStartTouch += SwipeStart;
-        inputManager.OnEndTouch += SwipeEnd;
-    }
-
-    private void OnDisable()
-    {
-        inputManager.OnStartTouch -= SwipeStart;
-        inputManager.OnEndTouch -= SwipeEnd;
-    }
-
-    private void SwipeStart(TouchData touchData) => startTouchData = touchData;
-
-    private void SwipeEnd(TouchData touchData)
-    {
-        endTouchData = touchData;
-        DetectSwipe();
-    }
-
-    private void DetectSwipe()
-    {
-
-        if (Vector3.Distance(startTouchData.Position, endTouchData.Position) >= minimumDistance &&
-            (endTouchData.Time - startTouchData.Time) <= maximumTime)
+        Vector3 direction = endTouch.Position - startTouch.Position;
+        Vector2 direction2D = new Vector2(direction.x, direction.y).normalized;
+        SwipeDirection? swipeDirection = GetSwipeDirection(direction2D);
+        if (swipeDirection != null)
         {
-            Vector3 direction = endTouchData.Position - startTouchData.Position;
-            Vector2 direction2D = new Vector2(direction.x, direction.y).normalized;
-            GetSwipeDirection(direction2D);
+            SendSwipe(startTouch, endTouch, (SwipeDirection) swipeDirection);
         }
     }
 
-    private void GetSwipeDirection(Vector2 direction)
+    private SwipeDirection? GetSwipeDirection(Vector2 direction)
     {
         if (Vector2.Dot(Vector2.up, direction) > directionThreshold)
         {
-            SendSwipe(SwipeDirection.Up);
+            return (SwipeDirection.Up);
         }
         if (Vector2.Dot(Vector2.down, direction) > directionThreshold)
         {
-            SendSwipe(SwipeDirection.Down);
+            return (SwipeDirection.Down);
         }
         if (Vector2.Dot(Vector2.left, direction) > directionThreshold)
         {
-            SendSwipe(SwipeDirection.Left);
+            return (SwipeDirection.Left);
         }
         if (Vector2.Dot(Vector2.right, direction) > directionThreshold)
         {
-            SendSwipe(SwipeDirection.Right);
+            return (SwipeDirection.Right);
         }
+        return null;
     }
 
-    private void SendSwipe(SwipeDirection swipeDirection)
+    private void SendSwipe(TouchData startTouchData, TouchData endTouchData, SwipeDirection swipeDirection)
     {
         SwipeData swipeData = new SwipeData()
         {

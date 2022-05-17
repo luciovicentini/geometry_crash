@@ -2,79 +2,58 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-[DefaultExecutionOrder(-1)]
-public class InputManager : Singleton<InputManager>
+/*
+* This class detect from input manager if the user is touching or swiping.
+*/
+public class InputManager : MonoBehaviour
 {
+    private InputDetector inputDetector;
+    private SwipeDetector swipeDetector;
+    private TouchDetector touchDetector;
 
-    #region Events
-    public delegate void StartTouch(TouchData touchData);
-    public event StartTouch OnStartTouch;
-    public delegate void EndTouch(TouchData touchData);
-    public event EndTouch OnEndTouch;
-    #endregion
+    private TouchData startTouchData;
+    private TouchData endTouchData;
 
-    private TouchControls touchControls;
-    private Camera mainCamera;
+    // public static event Action<String> OnChipClicked = delegate { };
+    // public static event Action<SwipeData> OnSwipe = delegate { };
 
     private void Awake()
     {
-        touchControls = new TouchControls();
-        mainCamera = Camera.main;
+        inputDetector = InputDetector.Instance;
+        swipeDetector = FindObjectOfType<SwipeDetector>();
+        touchDetector = FindObjectOfType<TouchDetector>();
     }
 
     private void OnEnable()
     {
-        touchControls.Enable();
+        inputDetector.OnStartTouch += StartTouch;
+        inputDetector.OnEndTouch += EndTouch;
     }
 
     private void OnDisable()
     {
-        touchControls.Disable();
+        inputDetector.OnStartTouch -= StartTouch;
+        inputDetector.OnEndTouch -= EndTouch;
     }
 
-    private void Start()
+    private void StartTouch(TouchData touchData)
     {
-        touchControls.Touch.PrimaryContact.started += ctx => StartTouchPrimary(ctx);
-        touchControls.Touch.PrimaryContact.canceled += ctx => EndTouchPrimary(ctx);
+        startTouchData = touchData;
     }
 
-    private void StartTouchPrimary(InputAction.CallbackContext context)
+    private void EndTouch(TouchData touchData)
     {
-        if (OnStartTouch != null)
-        {
-            Vector2 position = touchControls.Touch.PrimaryPosition.ReadValue<Vector2>();
-            float startTime = (float)context.startTime;
-            TouchData data = new TouchData { Position = position, Time = startTime };
-            OnStartTouch(data);
+        endTouchData = touchData;
+        ProcessTouches();
+    }
+
+    private void ProcessTouches()
+    {
+        if (swipeDetector.IsSwiping(startTouchData, endTouchData)) {
+            swipeDetector.DetectSwipe(startTouchData, endTouchData);
+        } else {
+            touchDetector.StartTouch(startTouchData);
         }
-    }
-
-    private void EndTouchPrimary(InputAction.CallbackContext context)
-    {
-        if (OnEndTouch != null)
-        {
-            Vector2 position = touchControls.Touch.PrimaryPosition.ReadValue<Vector2>();
-            float time = (float)context.time;
-            TouchData data = new TouchData { Position = position, Time = time };
-            OnEndTouch(data);
-        }
-    }
-
-    public Vector2 PrimaryPosition()
-    {
-        return Utils.ScreenToWorld(mainCamera, touchControls.Touch.PrimaryPosition.ReadValue<Vector2>());
-    }
-}
-
-public struct TouchData
-{
-    public Vector2 Position;
-    public float Time;
-
-    public override string ToString()
-    {
-        return $"(Position: (x:{this.Position.x},y:{Position.y}), Time: {this.Time})";
     }
 }

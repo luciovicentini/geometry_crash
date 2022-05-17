@@ -222,7 +222,7 @@ public class GameScene : MonoBehaviour
 
     private bool GetSelection(GameObject holderChip)
     {
-        ClickDetector cm = holderChip.GetComponentInChildren<ClickDetector>();
+        ChipHolderSelect cm = holderChip.GetComponentInChildren<ChipHolderSelect>();
         if (cm == null) return false;
         return cm.GetSelection();
     }

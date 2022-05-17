@@ -54,9 +54,9 @@ public class ChipSwitcher : MonoBehaviour
         }
     }
 
-    public void HandleSwiping(SwipeDirection direction)
+    public void HandleSwiping(GameObject chipSelected, SwipeDirection direction)
     {
-        if (chip1 == null || chip2 != null) return;
+        chip1 = chipSelected.GetComponentInChildren<ChipAnimator>().gameObject;
         if (isSwitchingChips != null) return;
         Coord chip1Coord = GetCoordFromChip(chip1.transform.parent.gameObject);
         Coord chip2Coord = chip1Coord.GetCoordBySwipeDirection(direction);
@@ -93,7 +93,7 @@ public class ChipSwitcher : MonoBehaviour
         }
         else
         {
-            chip1.transform.parent.GetComponent<ClickDetector>().ResetSelection();
+            chip1.transform.parent.GetComponent<ChipHolderSelect>().ResetSelection();
             chip1 = chip2;
             chip2 = null;
         }
@@ -127,13 +127,13 @@ public class ChipSwitcher : MonoBehaviour
     {
         if (chip1 != null)
         {
-            chip1.transform.parent.GetComponent<ClickDetector>()?.ResetSelection();
+            chip1.transform.parent.GetComponent<ChipHolderSelect>()?.ResetSelection();
             chip1 = null;
         }
 
         if (chip2 != null)
         {
-            chip2.transform.parent.GetComponent<ClickDetector>()?.ResetSelection();
+            chip2.transform.parent.GetComponent<ChipHolderSelect>()?.ResetSelection();
             chip2 = null;
         }
     }

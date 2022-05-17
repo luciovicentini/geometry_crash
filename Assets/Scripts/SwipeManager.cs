@@ -26,10 +26,9 @@ public class SwipeManager : MonoBehaviour
 
     private void OnSwipe(SwipeData data)
     {
-        Vector2 swipeStartPositionWorld = main.ScreenToWorldPoint(data.StartPosition);
-        if (!IsSwipeInsideBoard(swipeStartPositionWorld)) return;
-        chipSwitcher.HandleSwiping(data.Direction);
-        
+        GameObject chipTouched = Utils.DetectObject(main, data.StartPosition);
+        if (chipTouched == null) return;
+        chipSwitcher.HandleSwiping(chipTouched, data.Direction);
     }
 
     private bool IsSwipeInsideBoard(Vector2 swipePosition) {

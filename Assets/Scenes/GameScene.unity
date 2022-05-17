@@ -1017,7 +1017,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a0c735e82764455b98157be05480bcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationChance: 0
   destroyAnimationTime: 0.2
   createAnimationTime: 0.2
   fallingAnimationTime: 0.2
@@ -1269,6 +1268,7 @@ GameObject:
   - component: {fileID: 1767060595}
   - component: {fileID: 1767060598}
   - component: {fileID: 1767060599}
+  - component: {fileID: 1767060600}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -1288,7 +1288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0a62c038795842ad973395429a943b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minimumDistance: 0.2
+  minimumDistance: 50
   maximumTime: 1
   directionThreshold: 0.9
 --- !u!114 &1767060596
@@ -1340,6 +1340,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 023ce22bb1bf6459ebb5429304f0c41c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1767060600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1767060594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc35fed3403ec4384b062374e35ff879, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1932344613

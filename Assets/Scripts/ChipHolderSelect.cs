@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ClickDetector : MonoBehaviour
+public class ChipHolderSelect : MonoBehaviour
 {
     [SerializeField] bool isSelected;
     [SerializeField] GameObject selectionSprite;
@@ -23,12 +23,12 @@ public class ClickDetector : MonoBehaviour
 
     private void OnEnable()
     {
-        ObjectDetector.OnChipClicked += OnClicked;
+        TouchDetector.OnChipClicked += OnClicked;
     }
 
     private void OnDisable()
     {
-        ObjectDetector.OnChipClicked -= OnClicked;
+        TouchDetector.OnChipClicked -= OnClicked;
     }
 
     private void OnClicked(String chipName)
