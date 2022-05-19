@@ -218,5 +218,8 @@ namespace CustomUtil
             int dividerIndex = oldParentName.IndexOf(NAME_DIVIDER);
             return int.Parse(oldParentName.Substring(dividerIndex + 1));
         }
+        
+        internal static Coord GetCoordFromChip(ChipHolderSelect holderChip) => Coord.GetCoordFromChipHolderName(holderChip.gameObject.name);
     }
+
 }

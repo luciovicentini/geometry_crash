@@ -205,9 +205,9 @@ public class GameScene : MonoBehaviour
 
     public GameObject GetHolderChipFromPosition(int row, int column) =>
         gameObject.transform.Find(GetHolderName(row, column)).gameObject;
+
     public GameObject GetHolderChipFromPosition(Coord coord) =>
         GetHolderChipFromPosition(coord.y, coord.x);
-
 
     internal GameObject GetChip(Coord coord) => GetHolderChipFromPosition(coord.y, coord.x)
                                                         .FindChildWithTag("Chip");

@@ -9,7 +9,7 @@ public class AnimatorManager : MonoBehaviour
     [SerializeField] float createAnimationTime = 0.1f;
     [SerializeField] float fallingAnimationTime = 0.1f;
     [SerializeField] float switchAnimationTime = 0.1f;
-    [SerializeField] float selectionAnimationTime = 0.1f;
+    [SerializeField] static float selectionAnimationTime = 0.1f;
 
     [SerializeField][Range(0f, 1f)] float holderPadding = 0.9f;
 
@@ -105,7 +105,7 @@ public class AnimatorManager : MonoBehaviour
     internal float GetCreateAnimationTime() => createAnimationTime;
     internal float GetFallingAnimationTime() => fallingAnimationTime;
     internal float GetSwitchAnimationTime() => switchAnimationTime;
-    internal float GetSelectAnimationTime() => selectionAnimationTime;
+    internal static float GetSelectAnimationTime() => selectionAnimationTime;
 
     private void AnimationStateRunning()
     {

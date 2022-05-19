@@ -1021,7 +1021,6 @@ MonoBehaviour:
   createAnimationTime: 0.2
   fallingAnimationTime: 0.2
   switchAnimationTime: 0.2
-  selectionAnimationTime: 0.2
   holderPadding: 0.85
 --- !u!4 &1178560174
 Transform:
@@ -1269,6 +1268,7 @@ GameObject:
   - component: {fileID: 1767060598}
   - component: {fileID: 1767060599}
   - component: {fileID: 1767060600}
+  - component: {fileID: 1767060601}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -1354,6 +1354,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc35fed3403ec4384b062374e35ff879, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1767060601
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1767060594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ce89df8da7c44256a087323c00fa2e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chip1: {fileID: 0}
+  chip2: {fileID: 0}
+  processChipSelection: 0
 --- !u!1 &1932344613
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,15 +5,15 @@ using UnityEngine;
 
 public class ChipHolderSelect : MonoBehaviour
 {
-    [SerializeField] bool isSelected;
+    [SerializeField] bool isSelected = false;
     [SerializeField] GameObject selectionSprite;
+    [SerializeField] bool processSelected;
 
-    private bool chipClicked;
     ChipSwitcher chipSwitcher;
     AnimatorManager animatorManager;
 
     GameObject chip;
-    Coroutine selectChipAnimationCR;
+    Coroutine animateSelection;
 
     private void Awake()
     {
@@ -21,46 +21,34 @@ public class ChipHolderSelect : MonoBehaviour
         animatorManager = FindObjectOfType<AnimatorManager>();
     }
 
-    private void OnEnable()
+    private void Update()
     {
-        TouchDetector.OnChipClicked += OnClicked;
-    }
-
-    private void OnDisable()
-    {
-        TouchDetector.OnChipClicked -= OnClicked;
-    }
-
-    private void OnClicked(String chipName)
-    {
-        if (chipName == this.gameObject.name)
+        if (processSelected)
         {
-            if (!animatorManager.AnimationsFinished() || chipSwitcher.IsSwitchingChip()) return;
-            if (selectChipAnimationCR != null) return;
-            isSelected = !isSelected;
-            chipClicked = true;
-            chip = gameObject.FindChildWithTag("Chip");
-            StartAnimationCoroutine();
-            SoundManager.PlaySound(SoundManager.Sound.ChipSelected, chip.transform.position);
+            ProcessSelection();
         }
+        processSelected = false;
     }
 
-    private void StartAnimationCoroutine()
+    private void ProcessSelection()
     {
-        if (selectChipAnimationCR != null) return;
-        selectChipAnimationCR = StartCoroutine(ToggleSelection());
+        if (!animatorManager.AnimationsFinished() || chipSwitcher.IsSwitchingChip()) return;
+        if (animateSelection != null) return;
+        chip = gameObject.FindChildWithTag("Chip");
+
+        SoundManager.PlaySound(SoundManager.Sound.ChipSelected, chip.transform.position);
+        animateSelection = StartCoroutine(AnimateSelection());
+
     }
 
-    private IEnumerator ToggleSelection()
+    private IEnumerator AnimateSelection()
     {
-        StartAnimation();
-        yield return new WaitForSeconds(animatorManager.GetSelectAnimationTime());
-        if (chipClicked) chipSwitcher.SetChipClicked(chip);
-        selectChipAnimationCR = null;
-        chipClicked = false;
+        SendAnimation();
+        yield return new WaitForSeconds(AnimatorManager.GetSelectAnimationTime());
+        animateSelection = null;
     }
 
-    private void StartAnimation()
+    private void SendAnimation()
     {
         if (isSelected)
         {
@@ -72,6 +60,11 @@ public class ChipHolderSelect : MonoBehaviour
         }
     }
 
+    internal void ToogleSelected()
+    {
+        SetSelection(!isSelected);
+    }
+
     internal void ResetSelection()
     {
         SetSelection(false);
@@ -80,7 +73,7 @@ public class ChipHolderSelect : MonoBehaviour
     internal void SetSelection(bool isSelected)
     {
         this.isSelected = isSelected;
-        StartAnimationCoroutine();
+        processSelected = true;
     }
 
     internal bool GetSelection() => isSelected;

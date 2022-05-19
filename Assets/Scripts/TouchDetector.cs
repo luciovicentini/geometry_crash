@@ -6,18 +6,20 @@ using UnityEngine;
 public class TouchDetector : MonoBehaviour
 {
     private Camera mainCamera;
+    private ChipSelectionManager csm;
 
-    public static event Action<String> OnChipClicked = delegate { };
+    // public static event Action<String> OnChipClicked = delegate { };
 
     private void Awake()
     {
         mainCamera = Camera.main;
+        csm = FindObjectOfType<ChipSelectionManager>();
     }
 
     public void StartTouch(TouchData touchData)
     {
         GameObject chipClicked = Utils.DetectObject(mainCamera, touchData.Position);
         if (chipClicked == null) return;
-        OnChipClicked(chipClicked.name);
+        csm.SetChip(chipClicked.GetComponent<ChipHolderSelect>());
     }
 }
